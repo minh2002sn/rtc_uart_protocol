@@ -20,6 +20,10 @@
 
 /* Includes ----------------------------------------------------------- */
 #include <stdint.h>
+#include "cbuffer.h"
+#include "common.h"
+#include "sys_data_mng.h"
+#include "bsp_ds1307.h"
 
 /* Public defines ----------------------------------------------------- */
 #define SYS_MNG_SUCCESS (0x00000000)
