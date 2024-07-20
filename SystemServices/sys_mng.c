@@ -35,21 +35,35 @@
 #define SYS_MNGS_MESSAGE_4TH_DATA_INDEX (4)
 
 /* Private enumerate/structure ---------------------------------------- */
+typedef struct
+{
+  uint8_t hour;
+  uint8_t min;
+  uint8_t sec;
+} smng_time_t;
+
+typedef struct
+{
+  uint8_t day;
+  uint8_t date;
+  uint8_t month;
+  uint8_t year;
+} smng_date_t;
 
 /* Private macros ----------------------------------------------------- */
 
 /* Public variables --------------------------------------------------- */
 
 /* Private variables -------------------------------------------------- */
-static cbuffer_t         smng_cb;
-static uint8_t           smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
-static uint8_t           smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
-static uint8_t           smng_msg_evt                       = 0;
-static uint32_t          smng_msg_data                      = 0;
-static drv_ds1307_time_t smng_curr_time;
-static drv_ds1307_date_t smng_curr_date;
-static drv_ds1307_time_t smng_alarm_time;
-static uint8_t           is_rtc_alarm = 0;
+static cbuffer_t   smng_cb;
+static uint8_t     smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
+static uint8_t     smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
+static uint8_t     smng_msg_evt                       = 0;
+static uint32_t    smng_msg_data                      = 0;
+static smng_time_t smng_curr_time;
+static smng_date_t smng_curr_date;
+static smng_time_t smng_alarm_time;
+static uint8_t     is_rtc_alarm = 0;
 
 /* Private function prototypes ---------------------------------------- */
 /**
