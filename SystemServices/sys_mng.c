@@ -97,10 +97,22 @@ static uint32_t sys_mng_process_data()
     {
     case SYS_DATA_MNG_CONN_UART_TO_MNG_EVENT_SET_TIME:
     {
+      // Get epoch datatype
       uint32_t epoch = smng_msg_buf[SYS_MNGS_MESSAGE_1ST_DATA_INDEX] << 24 |
       smng_msg_buf[SYS_MNGS_MESSAGE_2ND_DATA_INDEX] << 16 |
       smng_msg_buf[SYS_MNGS_MESSAGE_3RD_DATA_INDEX] << 8 |
       smng_msg_buf[SYS_MNGS_MESSAGE_4TH_DATA_INDEX];
+      // Decode epoch datatype, then store in current date and time structure
+      epoch_data_t epoch_data;
+      epoch_time_decode(epoch, &epoch_data);
+      smng_curr_date.day   = epoch_data.date.day;
+      smng_curr_date.date  = epoch_data.date.date;
+      smng_curr_date.month = epoch_data.date.month;
+      smng_curr_date.year  = epoch_data.date.year;
+      smng_curr_time.hour  = epoch_data.time.hour;
+      smng_curr_time.min   = epoch_data.time.min;
+      smng_curr_time.sec   = epoch_data.time.sec;
+      // Call set time function in BSP layer
 
       break;
     }
