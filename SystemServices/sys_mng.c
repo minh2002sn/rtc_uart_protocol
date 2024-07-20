@@ -54,21 +54,30 @@ typedef struct
   uint8_t year;
 } smng_date_t;
 
+typedef enum
+{
+  IDLE,
+  SYS_MNG_STATE_CHECK_HOUR,
+  SYS_MNG_STATE_CHECK_MINUTE,
+  SYS_MNG_STATE_CHECK_SECOND
+} smng_state_t
+
 /* Private macros ----------------------------------------------------- */
 
 /* Public variables --------------------------------------------------- */
 
 /* Private variables -------------------------------------------------- */
-static cbuffer_t   smng_cb;
-static uint8_t     smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
-static uint8_t     smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
-static uint8_t     smng_msg_evt                       = 0;
-static uint32_t    smng_msg_data                      = 0;
-static smng_time_t smng_curr_time;
-static smng_date_t smng_curr_date;
-static smng_time_t smng_alarm_time;
-static uint8_t     smng_is_rtc_alarm = 0;
-static uint32_t    smng_start_tick   = 0;
+static cbuffer_t    smng_cb;
+static uint8_t      smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
+static uint8_t      smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
+static uint8_t      smng_msg_evt                       = 0;
+static uint32_t     smng_msg_data                      = 0;
+static smng_time_t  smng_curr_time;
+static smng_date_t  smng_curr_date;
+static smng_time_t  smng_alarm_time;
+static uint8_t      smng_is_rtc_alarm = 0;
+static uint32_t     smng_start_tick   = 0;
+static smng_state_t smng_state        = IDLE;
 
 /* Private function prototypes ---------------------------------------- */
 /**
