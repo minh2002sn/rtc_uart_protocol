@@ -38,8 +38,8 @@ static uint16_t d_date_size = 1;
 static uint16_t d_ocsi_size = 1;
 
 /* Private function prototypes ---------------------------------------- */
-static uint8_t d_bcd2dec(uint8_t d_bcd_val);
-static uint8_t d_dec2bcd(uint8_t d_dec_val);
+static uint8_t drv_bcd2dec(uint8_t d_bcd_val);
+static uint8_t drv_dec2bcd(uint8_t d_dec_val);
 
 /* Public functions --------------------------------------------------- */
 uint32_t drv_ds1307_init(drv_ds1307_t *ds1307, I2C_HandleTypeDef *hi2c)
