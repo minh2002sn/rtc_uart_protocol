@@ -171,7 +171,7 @@ static uint32_t sys_mng_process_data()
 static uint32_t sys_mng_check_alarm()
 {
   uint32_t ret;
-  if (is_rtc_alarm)
+  if (smng_is_rtc_alarm)
   {
   }
   return SYS_COM_SUCCES;
