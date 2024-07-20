@@ -137,7 +137,11 @@ static uint32_t sys_mng_process_data()
     }
     case SYS_DATA_MNG_CONN_UART_TO_MNG_EVENT_SET_ALARM:
     {
-
+      // Get alarm time from message buffer, then store it into alarm buffer
+      smng_alarm_time.hour = smng_msg_buf[SYS_MNG_MESSAGE_HOUR_DATA_INDEX];
+      smng_alarm_time.min  = smng_msg_buf[SYS_MNG_MESSAGE_MINUTE_DATA_INDEX];
+      smng_alarm_time.sec  = smng_msg_buf[SYS_MNG_MESSAGE_SECOND_DATA_INDEX];
+      is_rtc_alarm         = 1;
       break;
     }
     default:
