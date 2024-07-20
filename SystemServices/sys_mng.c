@@ -67,8 +67,8 @@ static uint32_t    smng_msg_data                      = 0;
 static smng_time_t smng_curr_time;
 static smng_date_t smng_curr_date;
 static smng_time_t smng_alarm_time;
-static uint8_t     is_rtc_alarm    = 0;
-static uint32_t     smng_start_tick = 0;
+static uint8_t     smng_is_rtc_alarm = 0;
+static uint32_t    smng_start_tick   = 0;
 
 /* Private function prototypes ---------------------------------------- */
 /**
@@ -157,8 +157,8 @@ static uint32_t sys_mng_process_data()
       smng_alarm_time.hour = smng_msg_buf[SYS_MNG_MESSAGE_HOUR_DATA_INDEX];
       smng_alarm_time.min  = smng_msg_buf[SYS_MNG_MESSAGE_MINUTE_DATA_INDEX];
       smng_alarm_time.sec  = smng_msg_buf[SYS_MNG_MESSAGE_SECOND_DATA_INDEX];
-      is_rtc_alarm         = 1;
-      smng_start_tick = HAL_GetTick();
+      smng_is_rtc_alarm    = 1;
+      smng_start_tick      = HAL_GetTick();
       break;
     }
     default:
