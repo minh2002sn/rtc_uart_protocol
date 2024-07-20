@@ -49,6 +49,7 @@ static uint32_t          smng_msg_data                      = 0;
 static drv_ds1307_time_t smng_curr_time;
 static drv_ds1307_date_t smng_curr_date;
 static drv_ds1307_time_t smng_alarm_time;
+static uint8_t           is_rtc_alarm = 0;
 
 /* Private function prototypes ---------------------------------------- */
 /**
@@ -98,13 +99,13 @@ static uint32_t sys_mng_process_data()
     case SYS_DATA_MNG_CONN_UART_TO_MNG_EVENT_SET_TIME:
     {
       // Get epoch datatype
-      uint32_t epoch = smng_msg_buf[SYS_MNGS_MESSAGE_1ST_DATA_INDEX] << 24 |
+      uint32_t epoch_value = smng_msg_buf[SYS_MNGS_MESSAGE_1ST_DATA_INDEX] << 24 |
       smng_msg_buf[SYS_MNGS_MESSAGE_2ND_DATA_INDEX] << 16 |
       smng_msg_buf[SYS_MNGS_MESSAGE_3RD_DATA_INDEX] << 8 |
       smng_msg_buf[SYS_MNGS_MESSAGE_4TH_DATA_INDEX];
       // Decode epoch datatype, then store in current date and time structure
       epoch_data_t epoch_data;
-      epoch_time_decode(epoch, &epoch_data);
+      epoch_time_decode(epoch_value, &epoch_data);
       smng_curr_date.day   = epoch_data.date.day;
       smng_curr_date.date  = epoch_data.date.date;
       smng_curr_date.month = epoch_data.date.month;
@@ -122,6 +123,7 @@ static uint32_t sys_mng_process_data()
     }
     case SYS_DATA_MNG_CONN_UART_TO_MNG_EVENT_SET_ALARM:
     {
+
       break;
     }
     default:
