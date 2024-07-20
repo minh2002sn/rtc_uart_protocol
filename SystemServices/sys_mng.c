@@ -75,8 +75,8 @@ static uint32_t     smng_msg_data                      = 0;
 static smng_time_t  smng_curr_time;
 static smng_date_t  smng_curr_date;
 static smng_time_t  smng_alarm_time;
-static uint32_t     smng_start_tick   = 0;
-static smng_state_t smng_state        = SYS_MNG_STATE_CHECK_IDLE;
+static uint32_t     smng_start_tick = 0;
+static smng_state_t smng_state      = SYS_MNG_STATE_CHECK_IDLE;
 
 /* Private function prototypes ---------------------------------------- */
 /**
@@ -100,6 +100,20 @@ static uint32_t sys_mng_process_data();
  *  - (-1): Error
  */
 static uint32_t sys_mng_check_alarm();
+
+/**
+ * @brief           Get alarm state
+ *
+ * @param[in]       curr_time   Pointer to current time structure
+ * @param[in]       alarm_time  Pointer to alarm time structure
+ *
+ * @return
+ *  - (0) : Success
+ *  - (-1): Error
+ */
+static uint32_t sys_mng_get_alarm_state(smng_time_t  *curr_time,
+                                        smng_time_t  *alarm_time,
+                                        smng_state_t *state);
 
 /* Function definitions ----------------------------------------------- */
 uint32_t sys_mng_init()
@@ -165,6 +179,8 @@ static uint32_t sys_mng_process_data()
       smng_alarm_time.hour = smng_msg_buf[SYS_MNG_MESSAGE_HOUR_DATA_INDEX];
       smng_alarm_time.min  = smng_msg_buf[SYS_MNG_MESSAGE_MINUTE_DATA_INDEX];
       smng_alarm_time.sec  = smng_msg_buf[SYS_MNG_MESSAGE_SECOND_DATA_INDEX];
+      ret = sys_mng_get_alarm_state(&smng_curr_time, &smng_alarm_time, &smng_state);
+      ASSERT(ret==SYS_MNG_SUCCESS, SYS_MNG_ERROR);
       smng_start_tick      = HAL_GetTick();
       break;
     }
@@ -183,4 +199,73 @@ static uint32_t sys_mng_check_alarm()
   }
   return SYS_COM_SUCCES;
 }
+
+static uint32_t
+sys_mng_get_alarm_state(smng_time_t *curr_time, smng_time_t *alarm_time, smng_state_t *state)
+{
+  ASSERT(curr_time != NULL, SYS_MNG_ERROR);
+  ASSERT(alarm_time != NULL, SYS_MNG_ERROR);
+  ASSERT(state != NULL, SYS_MNG_ERROR);
+
+  if (alarm_time->hour < curr_time->hour)
+  {
+    state = SYS_MNG_STATE_CHECK_HOUR;
+  }
+  else
+  {
+    if (alarm_time->hour == curr_time->hour)
+    {
+      if (alarm_time->min < curr_time->min)
+      {
+        state = SYS_MNG_STATE_CHECK_HOUR;
+      }
+      else
+      {
+        if (alarm_time->min == curr_time->min)
+        {
+          if (alarm_time->sec <= curr_time->sec)
+          {
+            state = SYS_MNG_STATE_CHECK_HOUR;
+          }
+          else
+          {
+            state = SYS_MNG_STATE_CHECK_SECOND;
+          }
+        }
+        else
+        {
+          if ((alarm_time->min - curr_time->min) > 1)
+          {
+            state = SYS_MNG_STATE_CHECK_MINUTE;
+          }
+          else
+          {
+            state = SYS_MNG_STATE_CHECK_SECOND;
+          }
+        }
+      }
+    }
+    else
+    {
+      if ((alarm_time->hour - curr_time->hour) > 1)
+      {
+        state = SYS_MNG_STATE_CHECK_HOUR;
+      }
+      else
+      {
+        if ((alarm_time->min + (60 - curr_time->min) > 1))
+        {
+          state = SYS_MNG_STATE_CHECK_MINUTE;
+        }
+        else
+        {
+          state = SYS_MNG_STATE_CHECK_SECOND;
+        }
+      }
+    }
+  }
+  
+  return SYS_MNG_SUCCESS;
+}
+
 /* End of file -------------------------------------------------------- */
