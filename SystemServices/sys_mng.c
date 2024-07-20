@@ -72,7 +72,6 @@ static cbuffer_t    smng_cb;
 static uint8_t      smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
 static uint8_t      smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
 static uint8_t      smng_msg_evt                       = 0;
-static uint32_t     smng_msg_data                      = 0;
 static smng_time_t  smng_curr_time;
 static smng_date_t  smng_curr_date;
 static smng_time_t  smng_alarm_time;
@@ -150,7 +149,7 @@ static uint32_t sys_mng_process_data()
   uint32_t num_avail;
 
   num_avail = cb_data_count(&smng_cb);
-  if ((num_avail / SYS_MNG_MESSAGE_EVENT_INDEX)) /*Check if data is available*/
+  if ((num_avail / SYS_MNG_MESSAGE_SIZE)) /*Check if data is available*/
   {
     num_avail = cb_read(&smng_cb, smng_msg_buf, SYS_MNG_MESSAGE_SIZE);
     ASSERT(num_avail == SYS_MNG_MESSAGE_SIZE, SYS_MNG_ERROR);
@@ -248,7 +247,7 @@ static uint32_t sys_mng_check_alarm()
   {
     smng_state = SYS_MNG_STATE_CHECK_IDLE;
     smng_msg_to_uart.event = SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_NOTIFY_ALARM;
-    sys_data_mng_send(SYS_DATA_MNG_CONN_MNG_TO_UART, &smng_msg_to_uart, sizeof(smng_msg_to_uart));
+    sys_data_mng_send(SYS_DATA_MNG_CONN_MNG_TO_UART, (uint8_t*)&smng_msg_to_uart, sizeof(smng_msg_to_uart));
     break;
   }
   }
@@ -265,7 +264,7 @@ sys_mng_get_alarm_state(smng_time_t *curr_time, smng_time_t *alarm_time, smng_st
 
   if (alarm_time->hour < curr_time->hour)
   {
-    state = SYS_MNG_STATE_CHECK_HOUR;
+    *state = SYS_MNG_STATE_CHECK_HOUR;
   }
   else
   {
@@ -273,7 +272,7 @@ sys_mng_get_alarm_state(smng_time_t *curr_time, smng_time_t *alarm_time, smng_st
     {
       if (alarm_time->min < curr_time->min)
       {
-        state = SYS_MNG_STATE_CHECK_HOUR;
+        *state = SYS_MNG_STATE_CHECK_HOUR;
       }
       else
       {
@@ -281,22 +280,22 @@ sys_mng_get_alarm_state(smng_time_t *curr_time, smng_time_t *alarm_time, smng_st
         {
           if (alarm_time->sec <= curr_time->sec)
           {
-            state = SYS_MNG_STATE_CHECK_HOUR;
+            *state = SYS_MNG_STATE_CHECK_HOUR;
           }
           else
           {
-            state = SYS_MNG_STATE_CHECK_SECOND;
+            *state = SYS_MNG_STATE_CHECK_SECOND;
           }
         }
         else
         {
           if ((alarm_time->min - curr_time->min) > 1)
           {
-            state = SYS_MNG_STATE_CHECK_MINUTE;
+            *state = SYS_MNG_STATE_CHECK_MINUTE;
           }
           else
           {
-            state = SYS_MNG_STATE_CHECK_SECOND;
+            *state = SYS_MNG_STATE_CHECK_SECOND;
           }
         }
       }
@@ -305,17 +304,17 @@ sys_mng_get_alarm_state(smng_time_t *curr_time, smng_time_t *alarm_time, smng_st
     {
       if ((alarm_time->hour - curr_time->hour) > 1)
       {
-        state = SYS_MNG_STATE_CHECK_HOUR;
+        *state = SYS_MNG_STATE_CHECK_HOUR;
       }
       else
       {
         if ((alarm_time->min + (60 - curr_time->min) > 1))
         {
-          state = SYS_MNG_STATE_CHECK_MINUTE;
+          *state = SYS_MNG_STATE_CHECK_MINUTE;
         }
         else
         {
-          state = SYS_MNG_STATE_CHECK_SECOND;
+          *state = SYS_MNG_STATE_CHECK_SECOND;
         }
       }
     }
