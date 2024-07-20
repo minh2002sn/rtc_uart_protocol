@@ -59,8 +59,9 @@ typedef enum
   SYS_MNG_STATE_CHECK_IDLE,
   SYS_MNG_STATE_CHECK_HOUR,
   SYS_MNG_STATE_CHECK_MINUTE,
-  SYS_MNG_STATE_CHECK_SECOND
-} smng_state_t
+  SYS_MNG_STATE_CHECK_SECOND,
+  SYS_MNG_STATE_CHECK_ALARM
+} smng_state_t;
 
 /* Private macros ----------------------------------------------------- */
 
@@ -77,6 +78,8 @@ static smng_date_t  smng_curr_date;
 static smng_time_t  smng_alarm_time;
 static uint32_t     smng_start_tick = 0;
 static smng_state_t smng_state      = SYS_MNG_STATE_CHECK_IDLE;
+static uint32_t     smng_alarm_tick = 0;
+static sys_data_mng_conn_mng_to_uart_msg_t smng_msg_to_uart;
 
 /* Private function prototypes ---------------------------------------- */
 /**
@@ -123,7 +126,7 @@ uint32_t sys_mng_init()
   ret = cb_init(&smng_cb, smng_cb_buf, SYS_MNG_CBUFFER_SIZE);
   ASSERT(ret == CB_SUCCESS, SYS_MNG_ERROR);
 
-  ret = sys_data_mng_reg_node(SYS_DATA_MNG_CONN_UART_TO_MNG, &smng_cb_buf);
+  ret = sys_data_mng_reg_node(SYS_DATA_MNG_CONN_UART_TO_MNG, &smng_cb);
   ASSERT(ret == SYS_COM_SUCCES, SYS_MNG_ERROR);
 
   return SYS_MNG_SUCCESS;
@@ -131,6 +134,12 @@ uint32_t sys_mng_init()
 
 uint32_t sys_mng_loop()
 {
+    uint32_t ret;
+    ret = sys_mng_process_data();
+    ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
+    ret = sys_mng_check_alarm();
+    ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
+    return SYS_MNG_SUCCESS;
 }
 
 
@@ -141,17 +150,17 @@ static uint32_t sys_mng_process_data()
   uint32_t num_avail;
 
   num_avail = cb_data_count(&smng_cb);
-  if ((num_vail / SYS_MNG_MESSAGE_EVENT_INDEX)) /*Check if data is available*/
+  if ((num_avail / SYS_MNG_MESSAGE_EVENT_INDEX)) /*Check if data is available*/
   {
     num_avail = cb_read(&smng_cb, smng_msg_buf, SYS_MNG_MESSAGE_SIZE);
-    ASSERT(num_vail == SYS_MNG_MESSAGE_SIZE, SYS_MNG_ERROR);
+    ASSERT(num_avail == SYS_MNG_MESSAGE_SIZE, SYS_MNG_ERROR);
     smng_msg_evt = smng_msg_buf[SYS_MNG_MESSAGE_EVENT_INDEX];
     switch (smng_msg_evt)
     {
     case SYS_DATA_MNG_CONN_UART_TO_MNG_EVENT_SET_TIME:
     {
       // Get epoch datatype
-      uint32_t epoch_value = smng_msg_buf[SYS_MNGS_MESSAGE_1ST_DATA_INDEX] << 24 |
+      uint32_t epoch_value = smng_msg_buf[SYS_MNG_MESSAGE_1ST_DATA_INDEX] << 24 |
       smng_msg_buf[SYS_MNG_MESSAGE_2ND_DATA_INDEX] << 16 |
       smng_msg_buf[SYS_MNG_MESSAGE_3RD_DATA_INDEX] << 8 |
       smng_msg_buf[SYS_MNG_MESSAGE_4TH_DATA_INDEX];
@@ -180,8 +189,8 @@ static uint32_t sys_mng_process_data()
       smng_alarm_time.min  = smng_msg_buf[SYS_MNG_MESSAGE_MINUTE_DATA_INDEX];
       smng_alarm_time.sec  = smng_msg_buf[SYS_MNG_MESSAGE_SECOND_DATA_INDEX];
       ret = sys_mng_get_alarm_state(&smng_curr_time, &smng_alarm_time, &smng_state);
-      ASSERT(ret==SYS_MNG_SUCCESS, SYS_MNG_ERROR);
-      smng_start_tick      = HAL_GetTick();
+      ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
+      smng_start_tick = HAL_GetTick();
       break;
     }
     default:
@@ -194,10 +203,57 @@ static uint32_t sys_mng_process_data()
 static uint32_t sys_mng_check_alarm()
 {
   uint32_t ret;
-  if (smng_is_rtc_alarm)
+  uint32_t duration = HAL_GetTick() - smng_start_tick;
+  switch (smng_state)
   {
+  case SYS_MNG_STATE_CHECK_IDLE:
+  {
+    break;
   }
-  return SYS_COM_SUCCES;
+  case SYS_MNG_STATE_CHECK_HOUR:
+  {
+    if (duration > SYS_MNG_TICK_HOUR)
+    {
+      /*Get current time from DS1307 here*/
+      ret = sys_mng_get_alarm_state(&smng_curr_time, &smng_alarm_time, &smng_state);
+      ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
+      smng_start_tick = HAL_GetTick();
+    }
+    break;
+  }
+  case SYS_MNG_STATE_CHECK_MINUTE:
+  {
+    if (duration > SYS_MNG_TICK_MINUTE)
+    {
+      /*Get current time from DS1307 here*/
+      ret = sys_mng_get_alarm_state(&smng_curr_time, &smng_alarm_time, &smng_state);
+      ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
+      smng_start_tick = HAL_GetTick();
+      if (smng_state == SYS_MNG_STATE_CHECK_SECOND)
+      {
+        smng_alarm_tick = (60 - smng_curr_time.sec + smng_alarm_time.sec) * 1000;
+      }
+    }
+    break;
+  }
+  case SYS_MNG_STATE_CHECK_SECOND:
+  {
+    if (duration >= smng_alarm_tick)
+    {
+      smng_state = SYS_MNG_STATE_CHECK_ALARM;
+    }
+    break;
+  }
+  case SYS_MNG_STATE_CHECK_ALARM:
+  {
+    smng_state = SYS_MNG_STATE_CHECK_IDLE;
+    smng_msg_to_uart.event = SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_NOTIFY_ALARM;
+    sys_data_mng_send(SYS_DATA_MNG_CONN_MNG_TO_UART, &smng_msg_to_uart, sizeof(smng_msg_to_uart));
+    break;
+  }
+  }
+
+  return SYS_MNG_SUCCESS;
 }
 
 static uint32_t
@@ -264,7 +320,7 @@ sys_mng_get_alarm_state(smng_time_t *curr_time, smng_time_t *alarm_time, smng_st
       }
     }
   }
-  
+
   return SYS_MNG_SUCCESS;
 }
 
