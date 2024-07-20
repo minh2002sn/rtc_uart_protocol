@@ -29,10 +29,14 @@
   (3)                                  /*Index of second in message buffer*/
 #define SYS_MNG_MESSAGE_EPOCH_SIZE (4) /*Size of epoch datatype*/
 
-#define SYS_MNGS_MESSAGE_1ST_DATA_INDEX (1) /*Index of epoch data type*/
-#define SYS_MNGS_MESSAGE_2ND_DATA_INDEX (2)
-#define SYS_MNGS_MESSAGE_3RD_DATA_INDEX (3)
-#define SYS_MNGS_MESSAGE_4TH_DATA_INDEX (4)
+#define SYS_MNG_MESSAGE_1ST_DATA_INDEX (1) /*Index of epoch data type*/
+#define SYS_MNG_MESSAGE_2ND_DATA_INDEX (2)
+#define SYS_MNG_MESSAGE_3RD_DATA_INDEX (3)
+#define SYS_MNG_MESSAGE_4TH_DATA_INDEX (4)
+
+#define SYS_MNG_TICK_HOUR   3600000
+#define SYS_MNG_TICK_MINUTE 60000
+#define SYS_MNG_TICK_SECOND 1000
 
 /* Private enumerate/structure ---------------------------------------- */
 typedef struct
@@ -63,7 +67,8 @@ static uint32_t    smng_msg_data                      = 0;
 static smng_time_t smng_curr_time;
 static smng_date_t smng_curr_date;
 static smng_time_t smng_alarm_time;
-static uint8_t     is_rtc_alarm = 0;
+static uint8_t     is_rtc_alarm    = 0;
+static uint32_t     smng_start_tick = 0;
 
 /* Private function prototypes ---------------------------------------- */
 /**
@@ -76,6 +81,17 @@ static uint8_t     is_rtc_alarm = 0;
  *  - (-1): Error
  */
 static uint32_t sys_mng_process_data();
+
+/**
+ * @brief           Check alarm time
+ *
+ * @param[in]       none
+ *
+ * @return
+ *  - (0) : Success
+ *  - (-1): Error
+ */
+static uint32_t sys_mng_check_alarm();
 
 /* Function definitions ----------------------------------------------- */
 uint32_t sys_mng_init()
@@ -142,6 +158,7 @@ static uint32_t sys_mng_process_data()
       smng_alarm_time.min  = smng_msg_buf[SYS_MNG_MESSAGE_MINUTE_DATA_INDEX];
       smng_alarm_time.sec  = smng_msg_buf[SYS_MNG_MESSAGE_SECOND_DATA_INDEX];
       is_rtc_alarm         = 1;
+      smng_start_tick = HAL_GetTick();
       break;
     }
     default:
@@ -149,5 +166,14 @@ static uint32_t sys_mng_process_data()
     }
   }
   return SYS_MNG_SUCCESS;
+}
+
+static uint32_t sys_mng_check_alarm()
+{
+  uint32_t ret;
+  if (is_rtc_alarm)
+  {
+  }
+  return SYS_COM_SUCCES;
 }
 /* End of file -------------------------------------------------------- */
