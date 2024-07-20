@@ -56,7 +56,7 @@ typedef struct
 
 typedef enum
 {
-  IDLE,
+  SYS_MNG_STATE_CHECK_IDLE,
   SYS_MNG_STATE_CHECK_HOUR,
   SYS_MNG_STATE_CHECK_MINUTE,
   SYS_MNG_STATE_CHECK_SECOND
@@ -75,9 +75,8 @@ static uint32_t     smng_msg_data                      = 0;
 static smng_time_t  smng_curr_time;
 static smng_date_t  smng_curr_date;
 static smng_time_t  smng_alarm_time;
-static uint8_t      smng_is_rtc_alarm = 0;
 static uint32_t     smng_start_tick   = 0;
-static smng_state_t smng_state        = IDLE;
+static smng_state_t smng_state        = SYS_MNG_STATE_CHECK_IDLE;
 
 /* Private function prototypes ---------------------------------------- */
 /**
@@ -139,9 +138,9 @@ static uint32_t sys_mng_process_data()
     {
       // Get epoch datatype
       uint32_t epoch_value = smng_msg_buf[SYS_MNGS_MESSAGE_1ST_DATA_INDEX] << 24 |
-      smng_msg_buf[SYS_MNGS_MESSAGE_2ND_DATA_INDEX] << 16 |
-      smng_msg_buf[SYS_MNGS_MESSAGE_3RD_DATA_INDEX] << 8 |
-      smng_msg_buf[SYS_MNGS_MESSAGE_4TH_DATA_INDEX];
+      smng_msg_buf[SYS_MNG_MESSAGE_2ND_DATA_INDEX] << 16 |
+      smng_msg_buf[SYS_MNG_MESSAGE_3RD_DATA_INDEX] << 8 |
+      smng_msg_buf[SYS_MNG_MESSAGE_4TH_DATA_INDEX];
       // Decode epoch datatype, then store in current date and time structure
       epoch_data_t epoch_data;
       epoch_time_decode(epoch_value, &epoch_data);
@@ -166,7 +165,6 @@ static uint32_t sys_mng_process_data()
       smng_alarm_time.hour = smng_msg_buf[SYS_MNG_MESSAGE_HOUR_DATA_INDEX];
       smng_alarm_time.min  = smng_msg_buf[SYS_MNG_MESSAGE_MINUTE_DATA_INDEX];
       smng_alarm_time.sec  = smng_msg_buf[SYS_MNG_MESSAGE_SECOND_DATA_INDEX];
-      smng_is_rtc_alarm    = 1;
       smng_start_tick      = HAL_GetTick();
       break;
     }
