@@ -27,6 +27,7 @@
 #include "drv_ds1307.h"
 #include "sys_data_mng_msg_define.h"
 #include "sys_data_mng_conn_define.h"
+#include "epoch_time.h"
 
 /* Public defines ----------------------------------------------------- */
 #define SYS_MNG_SUCCESS (0x00000000)
