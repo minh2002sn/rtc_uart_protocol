@@ -51,6 +51,16 @@ static drv_ds1307_date_t smng_curr_date;
 static drv_ds1307_time_t smng_alarm_time;
 
 /* Private function prototypes ---------------------------------------- */
+/**
+ * @brief           Receive and process data from circular buffer
+ *
+ * @param[in]       none
+ *
+ * @return
+ *  - (0) : Success
+ *  - (-1): Error
+ */
+static uint32_t sys_mng_process_data();
 
 /* Function definitions ----------------------------------------------- */
 uint32_t sys_mng_init()
@@ -72,7 +82,7 @@ uint32_t sys_mng_loop()
 
 
 /* Private definitions ----------------------------------------------- */
-uint32_t sys_mng_process_data()
+static uint32_t sys_mng_process_data()
 {
   uint32_t ret;
   uint32_t num_avail;
