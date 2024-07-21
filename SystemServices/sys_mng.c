@@ -183,7 +183,9 @@ static uint32_t sys_mng_process_data()
       ret = bsp_ds1307_get_date(&smng_curr_date);
       ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
       // Send date and time message to system uart
-
+      smng_msg_to_uart.event = SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_GET_TIME;
+      sys_data_mng_send(SYS_DATA_MNG_CONN_MNG_TO_UART,
+                        (uint8_t *)&smng_msg_to_uart, sizeof(smng_msg_to_uart));
       break;
     }
     case SYS_DATA_MNG_CONN_UART_TO_MNG_EVENT_SET_ALARM:
