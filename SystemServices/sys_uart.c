@@ -48,6 +48,27 @@ static cbuffer_t  suart_cb;
 static uint8_t    suart_cb_buf[SYS_UART_CBUFFER_SIZE];
 
 /* Private function prototypes ---------------------------------------- */
+/**
+ * @brief           Receive and process data from uart bsp
+ *
+ * @param[in]       none
+ *
+ * @return
+ *  - (0) : Success
+ *  - (-1): Error
+ */
+static uint32_t sys_uart_process_data_from_uart();
+
+/**
+ * @brief           Receive and process data from system manager
+ *
+ * @param[in]       none
+ *
+ * @return
+ *  - (0) : Success
+ *  - (-1): Error
+ */
+static uint32_t sys_uart_process_data_from_sys_mng();
 
 /* Function definitions ----------------------------------------------- */
 uint32_t sys_uart_init(UART_HandleTypeDef *huart)
