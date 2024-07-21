@@ -39,21 +39,6 @@
 #define SYS_MNG_TICK_SECOND 1000
 
 /* Private enumerate/structure ---------------------------------------- */
-typedef struct
-{
-  uint8_t hour;
-  uint8_t min;
-  uint8_t sec;
-} smng_time_t;
-
-typedef struct
-{
-  uint8_t day;
-  uint8_t date;
-  uint8_t month;
-  uint8_t year;
-} smng_date_t;
-
 typedef enum
 {
   SYS_MNG_STATE_CHECK_IDLE,
@@ -127,6 +112,8 @@ uint32_t sys_mng_init()
 
   ret = sys_data_mng_reg_node(SYS_DATA_MNG_CONN_UART_TO_MNG, &smng_cb);
   ASSERT(ret == SYS_COM_SUCCES, SYS_MNG_ERROR);
+
+  /*bsp_init here*/
 
   return SYS_MNG_SUCCESS;
 }

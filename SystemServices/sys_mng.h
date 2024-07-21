@@ -19,14 +19,14 @@
 #define __SYS_MNG_
 
 /* Includes ----------------------------------------------------------- */
-#include <stdint.h>
+#include "bsp_ds1307.h"
 #include "cbuffer.h"
 #include "common.h"
-#include "sys_data_mng.h"
-#include "bsp_ds1307.h"
-#include "sys_data_mng_msg_define.h"
-#include "sys_data_mng_conn_define.h"
 #include "epoch_time.h"
+#include "sys_data_mng.h"
+#include "sys_data_mng_conn_define.h"
+#include "sys_data_mng_msg_define.h"
+#include <stdint.h>
 
 /* Public defines ----------------------------------------------------- */
 #define SYS_MNG_SUCCESS (0x00000000)
@@ -34,6 +34,20 @@
 #define SYS_MNG_BUFFULL (0xFFFFFFFE) /* Buffer full */
 
 /* Public enumerate/structure ----------------------------------------- */
+typedef struct
+{
+  uint8_t hour;
+  uint8_t min;
+  uint8_t sec;
+} smng_time_t;
+
+typedef struct
+{
+  uint8_t day;
+  uint8_t date;
+  uint8_t month;
+  uint8_t year;
+} smng_date_t;
 
 /* Public macros ------------------------------------------------------ */
 
