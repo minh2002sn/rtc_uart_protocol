@@ -22,9 +22,10 @@
 #include "common.h"
 
 /* Private defines ---------------------------------------------------- */
-#define SYS_UART_CBUFFER_SIZE    (20) /*Size of circular buffer*/
-#define SYS_UART_RX_MESSAGE_SIZE (6)  /*Size of data message*/
+#define SYS_UART_CBUFFER_SIZE (20) /*Size of circular buffer*/
 
+// Message received from UART
+#define SYS_UART_RX_MESSAGE_SIZE       (6) /*Size of data message*/
 #define SYS_UART_RX_MESSAGE_TYPE_INDEX (0) /*Index of type in message buffer*/
 #define SYS_UART_RX_MESSAGE_LEN_INDEX  (1) /*Index of len in message buffer*/
 #define SYS_UART_RX_MESSAGE_1ST_DATA_INDEX \
@@ -37,6 +38,18 @@
   (uint8_t)(5) /*Index of fourth data in message buffer*/
 #define SYS_UART_RX_MESSAGE_LEN_MAX (4) /*Maximum data len in message buffer*/
 
+// Message received from system manager
+#define SYS_UART_MESSAGE_SIZE \
+  (7) /*Size of message received from system manager*/
+#define SYS_UART_MESSAGE_EVENT_INDEX (0) /*Index of event in message buffer*/
+#define SYS_UART_MESSAGE_DATE_INDEX  (1) /*Index of date in message buffer*/
+#define SYS_UART_MESSAGE_MONTH_INDEX (2) /*Index of month in message buffer*/
+#define SYS_UART_MESSAGE_YEAR_INDEX  (3) /*Index of year in message buffer*/
+#define SYS_UART_MESSAGE_HOUR_INDEX  (4) /*Index of hour in message buffer*/
+#define SYS_UART_MESSAGE_MIN_INDEX   (5) /*Index of min in message buffer*/
+#define SYS_UART_MESSAGE_SEC_INDEX   (6) /*Index of sec in message buffer*/
+
+// Else
 #define TYPE_NUM              3
 #define SYS_UART_TIMEOUT_TICK 500
 
@@ -63,6 +76,7 @@ static cbuffer_t        suart_cb;
 static uint8_t          suart_cb_buf[SYS_UART_CBUFFER_SIZE];
 static sys_uart_state_t suart_state = SYS_UART_STATE_WAIT_TYPE;
 static uint8_t          suart_rx_msg_buf[SYS_UART_RX_MESSAGE_SIZE];
+static uint8_t          suart_msg_buf[SYS_UART_MESSAGE_SIZE];
 static sys_data_mng_conn_uart_to_mng_msg_t suart_msg_to_mng;
 static uint32_t                            suart_start_tick = 0;
 static uint8_t                             suart_data_count = 0;
@@ -110,7 +124,11 @@ uint32_t sys_uart_init(UART_HandleTypeDef *huart)
 
 uint32_t sys_uart_loop()
 {
-  sys_uart_process_data_from_uart();
+  uint32_t ret;
+  ret = sys_uart_process_data_from_uart();
+  ASSERT(ret == SYS_UART_SUCCES, SYS_UART_ERROR);
+  ret = sys_uart_process_data_from_sys_mng();
+  ASSERT(ret == SYS_UART_SUCCES, SYS_UART_ERROR);
   return SYS_UART_SUCCESS;
 }
 
@@ -261,4 +279,52 @@ static uint32_t sys_uart_process_data_from_uart()
   return SYS_UART_SUCCESS;
 }
 
+static uint32_t sys_uart_process_data_from_sys_mng()
+{
+  uint32_t ret;
+  uint32_t num_avail;
+  uint8_t  evt;
+
+  num_avail = cb_data_count(&suart_cb);
+  if ((num_avail / SYS_UART_MESSAGE_SIZE)) /*Check if data is available*/
+  {
+    num_avail = cb_read(&suart_cb, suart_msg_buf, SYS_UART_MESSAGE_SIZE);
+    ASSERT(num_avail == SYS_UART_MESSAGE_SIZE, SYS_UART_ERROR);
+    evt = suart_msg_buf[SYS_UART_MESSAGE_EVENT_INDEX];
+    switch (evt)
+    {
+    case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_NOTIFY_ALARM:
+    {
+      char str[] = "ALARM ALARM ALARM!!!!!!";
+      ret        = bsp_uart_transmit(&suart, str, sizeof(str) - 1);
+      ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
+      break;
+    }
+    case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_GET_TIME:
+    {
+      char str[35]];
+      sprintf(str, "%d-%d-%d | %d:%d:%d", suart_msg_buf[SYS_UART_MESSAGE_DATE_INDEX],
+              suart_msg_buf[SYS_UART_MESSAGE_MONTH_INDEX],
+              suart_msg_buf[SYS_UART_MESSAGE_YEAR_INDEX],
+              suart_msg_buf[SYS_UART_MESSAGE_HOUR_INDEX],
+              suart_msg_buf[SYS_UART_MESSAGE_MIN_INDEX],
+              suart_msg_buf[SYS_UART_MESSAGE_SEC_INDEX]);
+      ret = bsp_uart_transmit(&suart, str, sizeof(str) - 1);
+      ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
+      break;
+    }
+    case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_SET_TIME_ERROR:
+    {
+      char str[] = "SET TIME FAILED!!!";
+      ret        = bsp_uart_transmit(&suart, str, sizeof(str) - 1);
+      ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
+      break;
+      break;
+    }
+    default:
+      break;
+    }
+  }
+  return SYS_UART_SUCCESS;
+}
 /* End of file -------------------------------------------------------- */
