@@ -53,16 +53,16 @@ typedef enum
 /* Public variables --------------------------------------------------- */
 
 /* Private variables -------------------------------------------------- */
-static cbuffer_t    smng_cb;
-static uint8_t      smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
-static uint8_t      smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
-static uint8_t      smng_msg_evt                       = 0;
-static drv_ds1307_time_t  smng_curr_time;
-static drv_ds1307_date_t  smng_curr_date;
-static drv_ds1307_time_t  smng_alarm_time;
-static uint32_t     smng_start_tick = 0;
-static smng_state_t smng_state      = SYS_MNG_STATE_CHECK_IDLE;
-static uint32_t     smng_alarm_tick = 0;
+static cbuffer_t         smng_cb;
+static uint8_t           smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
+static uint8_t           smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
+static uint8_t           smng_msg_evt                       = 0;
+static drv_ds1307_time_t smng_curr_time;
+static drv_ds1307_date_t smng_curr_date;
+static drv_ds1307_time_t smng_alarm_time;
+static uint32_t          smng_start_tick = 0;
+static smng_state_t      smng_state      = SYS_MNG_STATE_CHECK_IDLE;
+static uint32_t          smng_alarm_tick = 0;
 static sys_data_mng_conn_mng_to_uart_msg_t smng_msg_to_uart;
 
 /* Private function prototypes ---------------------------------------- */
@@ -98,34 +98,40 @@ static uint32_t sys_mng_check_alarm();
  *  - (0) : Success
  *  - (-1): Error
  */
-static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t  *curr_time,
-                                        drv_ds1307_time_t  *alarm_time,
-                                        smng_state_t *state);
+static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time,
+                                        drv_ds1307_time_t *alarm_time,
+                                        smng_state_t      *state);
 
 /* Function definitions ----------------------------------------------- */
 uint32_t sys_mng_init(I2C_HandleTypeDef *hi2c)
 {
   uint32_t ret;
-
+  // Initialize circular buffer
   ret = cb_init(&smng_cb, smng_cb_buf, SYS_MNG_CBUFFER_SIZE);
   ASSERT(ret == CB_SUCCESS, SYS_MNG_ERROR);
-
+  // Initialize connection to system uart
   ret = sys_data_mng_reg_node(SYS_DATA_MNG_CONN_UART_TO_MNG, &smng_cb);
   ASSERT(ret == SYS_COM_SUCCES, SYS_MNG_ERROR);
-
-  /*bsp_init here*/
+  // Initialize DS1307 driver
+  ret = bsp_ds1307_init(hi2c);
+  ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
+  // Get current time from DS1307
+  ret = bsp_ds1307_get_time(&smng_curr_time);
+  ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
 
   return SYS_MNG_SUCCESS;
 }
 
 uint32_t sys_mng_loop()
 {
-    uint32_t ret;
-    ret = sys_mng_process_data();
-    ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
-    ret = sys_mng_check_alarm();
-    ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
-    return SYS_MNG_SUCCESS;
+  uint32_t ret;
+  // Process data stored in circular buffer
+  ret = sys_mng_process_data();
+  ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
+  // Check alarm
+  ret = sys_mng_check_alarm();
+  ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
+  return SYS_MNG_SUCCESS;
 }
 
 
@@ -232,9 +238,10 @@ static uint32_t sys_mng_check_alarm()
   }
   case SYS_MNG_STATE_CHECK_ALARM:
   {
-    smng_state = SYS_MNG_STATE_CHECK_IDLE;
+    smng_state             = SYS_MNG_STATE_CHECK_IDLE;
     smng_msg_to_uart.event = SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_NOTIFY_ALARM;
-    sys_data_mng_send(SYS_DATA_MNG_CONN_MNG_TO_UART, (uint8_t*)&smng_msg_to_uart, sizeof(smng_msg_to_uart));
+    sys_data_mng_send(SYS_DATA_MNG_CONN_MNG_TO_UART,
+                      (uint8_t *)&smng_msg_to_uart, sizeof(smng_msg_to_uart));
     break;
   }
   }
@@ -242,8 +249,9 @@ static uint32_t sys_mng_check_alarm()
   return SYS_MNG_SUCCESS;
 }
 
-static uint32_t
-sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time, drv_ds1307_time_t *alarm_time, smng_state_t *state)
+static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time,
+                                        drv_ds1307_time_t *alarm_time,
+                                        smng_state_t      *state)
 {
   ASSERT(curr_time != NULL, SYS_MNG_ERROR);
   ASSERT(alarm_time != NULL, SYS_MNG_ERROR);
