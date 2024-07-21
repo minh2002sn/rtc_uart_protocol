@@ -126,9 +126,9 @@ uint32_t sys_uart_loop()
 {
   uint32_t ret;
   ret = sys_uart_process_data_from_uart();
-  ASSERT(ret == SYS_UART_SUCCES, SYS_UART_ERROR);
+  ASSERT(ret == SYS_UART_SUCCESS, SYS_UART_ERROR);
   ret = sys_uart_process_data_from_sys_mng();
-  ASSERT(ret == SYS_UART_SUCCES, SYS_UART_ERROR);
+  ASSERT(ret == SYS_UART_SUCCESS, SYS_UART_ERROR);
   return SYS_UART_SUCCESS;
 }
 
@@ -296,27 +296,27 @@ static uint32_t sys_uart_process_data_from_sys_mng()
     case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_NOTIFY_ALARM:
     {
       char str[] = "ALARM ALARM ALARM!!!!!!";
-      ret        = bsp_uart_transmit(&suart, str, sizeof(str) - 1);
+      ret        = bsp_uart_transmit(&suart, (uint8_t*)&str, sizeof(str) - 1);
       ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
       break;
     }
     case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_GET_TIME:
     {
-      char str[35]];
+      char str[35];
       sprintf(str, "%d-%d-%d | %d:%d:%d", suart_msg_buf[SYS_UART_MESSAGE_DATE_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_MONTH_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_YEAR_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_HOUR_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_MIN_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_SEC_INDEX]);
-      ret = bsp_uart_transmit(&suart, str, sizeof(str) - 1);
+      ret = bsp_uart_transmit(&suart, (uint8_t*)&str, sizeof(str) - 1);
       ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
       break;
     }
     case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_SET_TIME_ERROR:
     {
       char str[] = "SET TIME FAILED!!!";
-      ret        = bsp_uart_transmit(&suart, str, sizeof(str) - 1);
+      ret        = bsp_uart_transmit(&suart, (uint8_t*)&str, sizeof(str) - 1);
       ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
       break;
       break;
