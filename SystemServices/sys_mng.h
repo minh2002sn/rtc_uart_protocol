@@ -19,7 +19,7 @@
 #define __SYS_MNG_
 
 /* Includes ----------------------------------------------------------- */
-#include "bsp_ds1307.h"
+#include "bsp_rtc.h"
 #include "drv_ds1307.h"
 #include "cbuffer.h"
 #include "common.h"
