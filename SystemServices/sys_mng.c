@@ -131,6 +131,7 @@ uint32_t sys_mng_loop()
   // Check alarm
   ret = sys_mng_check_alarm();
   ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
+
   return SYS_MNG_SUCCESS;
 }
 
@@ -166,12 +167,23 @@ static uint32_t sys_mng_process_data()
       smng_curr_time.hour  = epoch_data.time.hour;
       smng_curr_time.min   = epoch_data.time.min;
       smng_curr_time.sec   = epoch_data.time.sec;
-      // Call set time function in BSP layer
+      // Call set date and time function in BSP layer
+      ret = bsp_ds1307_set_time(&smng_curr_time);
+      ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
+      ret = bsp_ds1307_set_date(&smng_curr_date);
+      ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
 
       break;
     }
     case SYS_DATA_MNG_CONN_UART_TO_MNG_EVENT_GET_TIME:
     {
+      // Call get date and time function in BSP layer
+      ret = bsp_ds1307_get_time(&smng_curr_time);
+      ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
+      ret = bsp_ds1307_get_date(&smng_curr_date);
+      ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
+      // Send date and time message to system uart
+
       break;
     }
     case SYS_DATA_MNG_CONN_UART_TO_MNG_EVENT_SET_ALARM:
