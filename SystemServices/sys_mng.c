@@ -53,16 +53,17 @@ typedef enum
 /* Public variables --------------------------------------------------- */
 
 /* Private variables -------------------------------------------------- */
-static cbuffer_t         smng_cb;
-static uint8_t           smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
-static uint8_t           smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
-static uint8_t           smng_msg_evt                       = 0;
-static drv_ds1307_time_t smng_curr_time;
-static drv_ds1307_date_t smng_curr_date;
-static drv_ds1307_time_t smng_alarm_time;
-static uint32_t          smng_start_tick = 0;
-static smng_state_t      smng_state      = SYS_MNG_STATE_CHECK_IDLE;
-static uint32_t          smng_alarm_tick = 0;
+static cbuffer_t                smng_cb;
+static uint8_t                  smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
+static uint8_t                  smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
+static uint8_t                  smng_msg_evt                       = 0;
+static drv_ds1307_time_t        smng_curr_time;
+static drv_ds1307_date_t        smng_curr_date;
+static drv_ds1307_time_t        smng_alarm_time;
+static drv_ds1307_time_format_t smng_time_format = DRV_DS1307_TIME_FORMAT_24;
+static uint32_t                 smng_start_tick  = 0;
+static smng_state_t             smng_state       = SYS_MNG_STATE_CHECK_IDLE;
+static uint32_t                 smng_alarm_tick  = 0;
 static sys_data_mng_conn_mng_to_uart_msg_t smng_msg_to_uart;
 
 /* Private function prototypes ---------------------------------------- */
@@ -168,7 +169,7 @@ static uint32_t sys_mng_process_data()
       smng_curr_time.min   = epoch_data.time.min;
       smng_curr_time.sec   = epoch_data.time.sec;
       // Call set date and time function in BSP layer
-      ret = bsp_rtc_set_time(&smng_curr_time);
+      ret = bsp_rtc_set_time(&smng_curr_time, &smng_time_format);
       ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
       ret = bsp_rtc_set_date(&smng_curr_date);
       if (ret == DRV_DS1307_ERROR)
