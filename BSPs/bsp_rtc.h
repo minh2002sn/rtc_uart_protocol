@@ -55,7 +55,7 @@ uint32_t bsp_rtc_init(I2C_HandleTypeDef *hi2c);
  *  - 0: Success
  *  - 1: Error
  */
-uint32_t bsp_rtc_set_time(drv_ds1307_time_t *time, drv_ds1307_time_format_t *time_format);
+uint32_t bsp_rtc_set_time(drv_ds1307_time_t *time, drv_ds1307_time_format_t time_format);
 
 /**
  * @brief         Get RTC time through BSP layer
@@ -117,7 +117,7 @@ uint32_t bsp_rtc_disable_osci(void);
  *  - 0: Success
  *  - 1: Error
  */
-uint32_t bsp_rtc_set_osci_freg(drv_ds1307_osci_freq_t *osci_freq);
+uint32_t bsp_rtc_set_osci_freg(drv_ds1307_osci_freq_t osci_freq);
 
 #endif // __BSP_RTC_H
 

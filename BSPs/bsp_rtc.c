@@ -45,7 +45,7 @@ uint32_t bsp_rtc_init(I2C_HandleTypeDef *hi2c)
   return BSP_RTC_SUCCESS;
 }
 
-uint32_t bsp_rtc_set_time(drv_ds1307_time_t *time, drv_ds1307_time_format_t *time_format)
+uint32_t bsp_rtc_set_time(drv_ds1307_time_t *time, drv_ds1307_time_format_t time_format)
 {
   uint32_t ret;
   ASSERT(time == NULL, BSP_RTC_ERROR);
@@ -111,7 +111,7 @@ uint32_t bsp_rtc_disable_osci(void)
   return BSP_RTC_SUCCESS;
 }
 
-uint32_t bsp_rtc_set_osci_freg(drv_ds1307_osci_freq_t *osci_freq)
+uint32_t bsp_rtc_set_osci_freg(drv_ds1307_osci_freq_t osci_freq)
 {
   uint32_t ret;
 
