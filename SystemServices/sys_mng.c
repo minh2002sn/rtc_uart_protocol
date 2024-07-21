@@ -103,7 +103,7 @@ static uint32_t sys_mng_get_alarm_state(smng_time_t  *curr_time,
                                         smng_state_t *state);
 
 /* Function definitions ----------------------------------------------- */
-uint32_t sys_mng_init()
+uint32_t sys_mng_init(I2C_HandleTypeDef *hi2c)
 {
   uint32_t ret;
 

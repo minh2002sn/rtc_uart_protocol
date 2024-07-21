@@ -61,7 +61,7 @@ typedef struct
  *  - (0) : Success
  *  - (-1): Error
  */
-uint32_t sys_mng_init();
+uint32_t sys_mng_init(I2C_HandleTypeDef *hi2c);
 
 /**
  * @brief           System manager loop() function
