@@ -20,6 +20,7 @@
 
 /* Includes ----------------------------------------------------------- */
 #include "bsp_ds1307.h"
+#include "drv_ds1307.h"
 #include "cbuffer.h"
 #include "common.h"
 #include "epoch_time.h"
