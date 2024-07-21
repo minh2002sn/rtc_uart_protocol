@@ -169,7 +169,7 @@ static uint32_t sys_mng_process_data()
       smng_curr_time.min   = epoch_data.time.min;
       smng_curr_time.sec   = epoch_data.time.sec;
       // Call set date and time function in BSP layer
-      ret = bsp_rtc_set_time(&smng_curr_time, &smng_time_format);
+      ret = bsp_rtc_set_time(&smng_curr_time, smng_time_format);
       ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
       ret = bsp_rtc_set_date(&smng_curr_date);
       if (ret == DRV_DS1307_ERROR)
