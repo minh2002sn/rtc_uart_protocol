@@ -148,19 +148,18 @@ uint32_t drv_ds1307_det_date(drv_ds1307_t *ds1307, drv_ds1307_date_t *date);
 uint32_t drv_ds1307_set_time_format(drv_ds1307_t *ds1307, drv_ds1307_time_format_t time_format);
 
 /**
- * @brief         Enable oscillator frequency
+ * @brief         Enable oscillator
  *
  * @param[in]     ds1307      Pointer to drv_ds1307_t structure
- * @param[in]     osci_freq   Oscillator frequency
  *
  * @return
  *  - 0: Success
  *  - 1: Error
  */
-uint32_t drv_ds1307_enable_osci(drv_ds1307_t *ds1307, drv_ds1307_osci_freq_t osci_freq);
+uint32_t drv_ds1307_enable_osci(drv_ds1307_t *ds1307);
 
 /**
- * @brief         Disable oscillator frequency
+ * @brief         Disable oscillator
  *
  * @param[in]     ds1307      Pointer to drv_ds1307_t structure
  *
@@ -170,6 +169,17 @@ uint32_t drv_ds1307_enable_osci(drv_ds1307_t *ds1307, drv_ds1307_osci_freq_t osc
  */
 uint32_t drv_ds1307_disable_osci(drv_ds1307_t *ds1307);
 
+/**
+ * @brief         Set oscillator frequency
+ *
+ * @param[in]     ds1307      Pointer to drv_ds1307_t structure
+ * @param[in]     osci_freq   Oscillator frequency
+ *
+ * @return
+ *  - 0: Success
+ *  - 1: Error
+ */
+uint32_t drv_ds1307_set_osci_freq(drv_ds1307_t *ds1307, drv_ds1307_osci_freq_t osci_freq);
 
 #endif // __DRV_DS1307_H
 
