@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "common.h": "c",
+        "cbuffer.h": "c",
+        "sys_data_mng.h": "c",
+        "bsp_ds1307.h": "c",
+        "sys_data_mng_msg_define.h": "c",
+        "sys_data_mng_conn_define.h": "c",
+        "epoch_time.h": "c"
+    }
+}
