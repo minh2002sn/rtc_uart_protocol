@@ -57,9 +57,9 @@ static cbuffer_t    smng_cb;
 static uint8_t      smng_cb_buf[SYS_MNG_CBUFFER_SIZE]  = { 0 };
 static uint8_t      smng_msg_buf[SYS_MNG_MESSAGE_SIZE] = { 0 };
 static uint8_t      smng_msg_evt                       = 0;
-static smng_time_t  smng_curr_time;
-static smng_date_t  smng_curr_date;
-static smng_time_t  smng_alarm_time;
+static drv_ds1307_time_t  smng_curr_time;
+static drv_ds1307_date_t  smng_curr_date;
+static drv_ds1307_time_t  smng_alarm_time;
 static uint32_t     smng_start_tick = 0;
 static smng_state_t smng_state      = SYS_MNG_STATE_CHECK_IDLE;
 static uint32_t     smng_alarm_tick = 0;
@@ -98,8 +98,8 @@ static uint32_t sys_mng_check_alarm();
  *  - (0) : Success
  *  - (-1): Error
  */
-static uint32_t sys_mng_get_alarm_state(smng_time_t  *curr_time,
-                                        smng_time_t  *alarm_time,
+static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t  *curr_time,
+                                        drv_ds1307_time_t  *alarm_time,
                                         smng_state_t *state);
 
 /* Function definitions ----------------------------------------------- */
@@ -243,7 +243,7 @@ static uint32_t sys_mng_check_alarm()
 }
 
 static uint32_t
-sys_mng_get_alarm_state(smng_time_t *curr_time, smng_time_t *alarm_time, smng_state_t *state)
+sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time, drv_ds1307_time_t *alarm_time, smng_state_t *state)
 {
   ASSERT(curr_time != NULL, SYS_MNG_ERROR);
   ASSERT(alarm_time != NULL, SYS_MNG_ERROR);
