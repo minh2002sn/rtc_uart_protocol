@@ -21,7 +21,9 @@
 /* Includes ----------------------------------------------------------- */
 #include "main.h"
 #include <stdint.h>
-
+#include "sys_data_mng.h"
+#include "sys_data_mng_conn_define.h"
+#include "sys_data_mng_msg_define.h"
 
 /* Public defines ----------------------------------------------------- */
 #define SYS_UART_SUCCESS (0x00000000)
