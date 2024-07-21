@@ -171,7 +171,11 @@ static uint32_t sys_mng_process_data()
       ret = bsp_ds1307_set_time(&smng_curr_time);
       ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
       ret = bsp_ds1307_set_date(&smng_curr_date);
-      ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
+      if (ret == DRV_DS1307_ERROR)
+      {
+        smng_msg_to_uart.event = SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_SET_TIME_ERROR;
+        return SYS_MNG_ERROR;
+      }
 
       break;
     }
