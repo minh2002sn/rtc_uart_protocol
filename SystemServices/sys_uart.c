@@ -111,6 +111,7 @@ uint32_t sys_uart_init(UART_HandleTypeDef *huart)
 uint32_t sys_uart_loop()
 {
   sys_uart_process_data_from_uart();
+  return SYS_UART_SUCCESS;
 }
 
 void sys_uart_rx_exti_handle(UART_HandleTypeDef *huart)
