@@ -202,24 +202,29 @@ static uint32_t sys_uart_process_data_from_uart()
         suart_state          = SYS_UART_STATE_WAIT_TYPE;
         send_msg_to_mng_flag = 1;
       }
-      if (ret == 1)
-      {
-        suart_rx_msg_buf[SYS_UART_RX_MESSAGE_1ST_DATA_INDEX + suart_data_count] = rx_data;
-        suart_start_tick = HAL_GetTick();
-        if (suart_data_count == suart_rx_msg_buf[SYS_UART_RX_MESSAGE_LEN_INDEX])
-        {
-          suart_data_count     = 0;
-          suart_state          = SYS_UART_STATE_WAIT_TYPE;
-          send_msg_to_mng_flag = 1;
-        }
-      }
       else
       {
-        suart_state = SYS_UART_STATE_WAIT_DATA;
+        if (ret == 1)
+        {
+          suart_rx_msg_buf[SYS_UART_RX_MESSAGE_1ST_DATA_INDEX + suart_data_count] = rx_data;
+          suart_data_count++;
+          suart_start_tick = HAL_GetTick();
+          if (suart_data_count == suart_rx_msg_buf[SYS_UART_RX_MESSAGE_LEN_INDEX])
+          {
+            suart_data_count     = 0;
+            suart_state          = SYS_UART_STATE_WAIT_TYPE;
+            send_msg_to_mng_flag = 1;
+          }
+        }
+        else
+        {
+          suart_state = SYS_UART_STATE_WAIT_DATA;
+        }
       }
     }
     else
     {
+      suart_data_count = 0;
       suart_state = SYS_UART_STATE_WAIT_TYPE;
     }
     break;
@@ -296,7 +301,7 @@ static uint32_t sys_uart_process_data_from_sys_mng()
     case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_NOTIFY_ALARM:
     {
       char str[] = "ALARM ALARM ALARM!!!!!!";
-      ret        = bsp_uart_transmit(&suart, (uint8_t*)&str, sizeof(str) - 1);
+      ret        = bsp_uart_transmit(&suart, (uint8_t *)&str, sizeof(str) - 1);
       ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
       break;
     }
@@ -309,14 +314,14 @@ static uint32_t sys_uart_process_data_from_sys_mng()
               suart_msg_buf[SYS_UART_MESSAGE_HOUR_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_MIN_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_SEC_INDEX]);
-      ret = bsp_uart_transmit(&suart, (uint8_t*)&str, sizeof(str) - 1);
+      ret = bsp_uart_transmit(&suart, (uint8_t *)&str, sizeof(str) - 1);
       ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
       break;
     }
     case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_SET_TIME_ERROR:
     {
       char str[] = "SET TIME FAILED!!!";
-      ret        = bsp_uart_transmit(&suart, (uint8_t*)&str, sizeof(str) - 1);
+      ret        = bsp_uart_transmit(&suart, (uint8_t *)&str, sizeof(str) - 1);
       ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
       break;
       break;
