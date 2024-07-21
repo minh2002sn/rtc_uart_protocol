@@ -23,6 +23,7 @@
 /* Private defines ---------------------------------------------------- */
 #define DRV_DS1307_I2C_ADDRESS        (0x68 << 1) // I2C address for DS1307
 #define DRV_DS1307_TIME_ADDRESS       (0x00)      // Time register address
+#define DRV_DS1307_HOUR_TIME_ADDRESS  (0x02)      // Hour time register address
 #define DRV_DS1307_DATE_ADDRESS       (0x03)      // Date register address
 #define DRV_DS1307_OSC_ADDRESS        (0x00)      // Osci register address
 #define DRV_DS1307_ENA_12H_FORMAT_BIT (0x40)
@@ -162,7 +163,7 @@ uint32_t drv_ds1307_set_time_format(drv_ds1307_t *ds1307, drv_ds1307_time_format
          DRV_DS1307_ERROR);
 
   // Read curr format time
-  ret = HAL_I2C_Mem_Read(ds1307->hi2c, DRV_DS1307_I2C_ADDRESS, DRV_DS1307_TIME_ADDRESS,
+  ret = HAL_I2C_Mem_Read(ds1307->hi2c, DRV_DS1307_I2C_ADDRESS, DRV_DS1307_HOUR_TIME_ADDRESS,
                          DRV_DS1307_MEM_SIZE, data, sizeof(data), HAL_MAX_DELAY);
   ASSERT(ret == HAL_OK, DRV_DS1307_ERROR);
 
@@ -172,11 +173,11 @@ uint32_t drv_ds1307_set_time_format(drv_ds1307_t *ds1307, drv_ds1307_time_format
   }
   else
   {
-    data &= ~DRV_DS1307_ENA_OSCI_BIT; // Ensure 24-hour format
+    data &= ~DRV_DS1307_ENA_12H_FORMAT_BIT; // Ensure 24-hour format
   }
 
   // Write new format time
-  ret = HAL_I2C_Mem_Write(ds1307->hi2c, DRV_DS1307_I2C_ADDRESS, DRV_DS1307_TIME_ADDRESS,
+  ret = HAL_I2C_Mem_Write(ds1307->hi2c, DRV_DS1307_I2C_ADDRESS, DRV_DS1307_HOUR_TIME_ADDRESS,
                           DRV_DS1307_MEM_SIZE, data, sizeof(data), HAL_MAX_DELAY);
   ASSERT(ret == HAL_OK, DRV_DS1307_ERROR);
 
