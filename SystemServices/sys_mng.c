@@ -29,10 +29,10 @@
   (3)                                  /*Index of second in message buffer*/
 #define SYS_MNG_MESSAGE_EPOCH_SIZE (4) /*Size of epoch datatype*/
 
-#define SYS_MNG_MESSAGE_1ST_DATA_INDEX (1) /*Index of epoch data type*/
-#define SYS_MNG_MESSAGE_2ND_DATA_INDEX (2)
-#define SYS_MNG_MESSAGE_3RD_DATA_INDEX (3)
-#define SYS_MNG_MESSAGE_4TH_DATA_INDEX (4)
+#define SYS_MNG_MESSAGE_1ST_DATA_INDEX (4) /*Index of epoch data type*/
+#define SYS_MNG_MESSAGE_2ND_DATA_INDEX (3)
+#define SYS_MNG_MESSAGE_3RD_DATA_INDEX (2)
+#define SYS_MNG_MESSAGE_4TH_DATA_INDEX (1)
 
 #define SYS_MNG_TICK_HOUR   3600000
 #define SYS_MNG_TICK_MINUTE 60000
