@@ -188,6 +188,12 @@ static uint32_t sys_mng_process_data()
       ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
       // Send date and time message to system uart
       smng_msg_to_uart.event = SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_GET_TIME;
+      smng_msg_to_uart.data.res_get_time_data.date  = smng_curr_date.date;
+      smng_msg_to_uart.data.res_get_time_data.month = smng_curr_date.month;
+      smng_msg_to_uart.data.res_get_time_data.year  = smng_curr_date.year;
+      smng_msg_to_uart.data.res_get_time_data.hour  = smng_curr_time.hour;
+      smng_msg_to_uart.data.res_get_time_data.min   = smng_curr_time.min;
+      smng_msg_to_uart.data.res_get_time_data.sec   = smng_curr_time.sec;
       sys_data_mng_send(SYS_DATA_MNG_CONN_MNG_TO_UART,
                         (uint8_t *)&smng_msg_to_uart, sizeof(smng_msg_to_uart));
       break;
