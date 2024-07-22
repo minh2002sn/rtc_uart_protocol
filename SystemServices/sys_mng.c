@@ -245,7 +245,7 @@ static uint32_t sys_mng_check_alarm()
       /*Get current time from DS1307 here*/
       ret = sys_mng_get_alarm_state(&smng_curr_time, &smng_alarm_time, &smng_state);
       ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
-      smng_start_tick = HAL_GetTick();
+      // smng_start_tick = HAL_GetTick();
       if (smng_state == SYS_MNG_STATE_CHECK_SECOND)
       {
         smng_alarm_tick = (60 - smng_curr_time.sec + smng_alarm_time.sec) * 1000;
@@ -305,6 +305,7 @@ static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time,
           else
           {
             *state = SYS_MNG_STATE_CHECK_SECOND;
+            smng_start_tick = HAL_GetTick();
           }
         }
         else
@@ -316,6 +317,7 @@ static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time,
           else
           {
             *state = SYS_MNG_STATE_CHECK_SECOND;
+            smng_start_tick = HAL_GetTick();
           }
         }
       }
@@ -335,6 +337,7 @@ static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time,
         else
         {
           *state = SYS_MNG_STATE_CHECK_SECOND;
+          smng_start_tick = HAL_GetTick();
         }
       }
     }
