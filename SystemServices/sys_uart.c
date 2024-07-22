@@ -307,7 +307,7 @@ static uint32_t sys_uart_process_data_from_sys_mng()
     }
     case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_GET_TIME:
     {
-      char str[35];
+      char str[20];
       sprintf(str, "%d-%d-%d | %d:%d:%d", suart_msg_buf[SYS_UART_MESSAGE_DATE_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_MONTH_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_YEAR_INDEX],

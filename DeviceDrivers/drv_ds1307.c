@@ -60,8 +60,8 @@ static uint8_t drv_dec2bcd(uint8_t d_dec_val);
 /* Public functions --------------------------------------------------- */
 uint32_t drv_ds1307_init(drv_ds1307_t *ds1307, I2C_HandleTypeDef *hi2c)
 {
-  ASSERT(ds1307 == NULL, DRV_DS1307_ERROR);
-  ASSERT(hi2c == NULL, DRV_DS1307_ERROR);
+  ASSERT(ds1307 != NULL, DRV_DS1307_ERROR);
+  ASSERT(hi2c != NULL, DRV_DS1307_ERROR);
 
   ds1307->hi2c = hi2c;
 
@@ -73,8 +73,8 @@ uint32_t drv_ds1307_set_time(drv_ds1307_t *ds1307, drv_ds1307_time_t *time, drv_
   HAL_StatusTypeDef ret;
   uint8_t           data[3];
 
-  ASSERT(ds1307 == NULL, DRV_DS1307_ERROR);
-  ASSERT(time == NULL, DRV_DS1307_ERROR);
+  ASSERT(ds1307 != NULL, DRV_DS1307_ERROR);
+  ASSERT(time != NULL, DRV_DS1307_ERROR);
   ASSERT((time_format == DRV_DS1307_TIME_FORMAT_12) || (time_format == DRV_DS1307_TIME_FORMAT_24),
          DRV_DS1307_ERROR);
 
@@ -99,8 +99,8 @@ uint32_t drv_ds1307_get_time(drv_ds1307_t *ds1307, drv_ds1307_time_t *time)
   HAL_StatusTypeDef ret;
   uint8_t           data[3];
 
-  ASSERT(ds1307 == NULL, DRV_DS1307_ERROR);
-  ASSERT(time == NULL, DRV_DS1307_ERROR);
+  ASSERT(ds1307 != NULL, DRV_DS1307_ERROR);
+  ASSERT(time != NULL, DRV_DS1307_ERROR);
 
   ret = HAL_I2C_Mem_Read(ds1307->hi2c, DRV_DS1307_I2C_ADDRESS, DRV_DS1307_TIME_ADDRESS,
                          DRV_DS1307_MEM_SIZE, data, sizeof(data), HAL_MAX_DELAY);
@@ -118,8 +118,8 @@ uint32_t drv_ds1307_set_date(drv_ds1307_t *ds1307, drv_ds1307_date_t *date)
   HAL_StatusTypeDef ret;
   uint8_t           data[4];
 
-  ASSERT(ds1307 == NULL, DRV_DS1307_ERROR);
-  ASSERT(date == NULL, DRV_DS1307_ERROR);
+  ASSERT(ds1307 != NULL, DRV_DS1307_ERROR);
+  ASSERT(date != NULL, DRV_DS1307_ERROR);
 
   data[0] = drv_dec2bcd(date->day);
   data[1] = drv_dec2bcd(date->date);
@@ -138,8 +138,8 @@ uint32_t drv_ds1307_get_date(drv_ds1307_t *ds1307, drv_ds1307_date_t *date)
   HAL_StatusTypeDef ret;
   uint8_t           data[4];
 
-  ASSERT(ds1307 == NULL, DRV_DS1307_ERROR);
-  ASSERT(date == NULL, DRV_DS1307_ERROR);
+  ASSERT(ds1307 != NULL, DRV_DS1307_ERROR);
+  ASSERT(date != NULL, DRV_DS1307_ERROR);
 
   ret = HAL_I2C_Mem_Read(ds1307->hi2c, DRV_DS1307_I2C_ADDRESS, DRV_DS1307_DATE_ADDRESS,
                          DRV_DS1307_MEM_SIZE, data, sizeof(data), HAL_MAX_DELAY);
@@ -158,7 +158,7 @@ uint32_t drv_ds1307_set_time_format(drv_ds1307_t *ds1307, drv_ds1307_time_format
   HAL_StatusTypeDef ret;
   uint8_t           data;
 
-  ASSERT((ds1307 == NULL), DRV_DS1307_ERROR);
+  ASSERT((ds1307 != NULL), DRV_DS1307_ERROR);
   ASSERT((time_format == DRV_DS1307_TIME_FORMAT_12) || (time_format == DRV_DS1307_TIME_FORMAT_24),
          DRV_DS1307_ERROR);
 
@@ -189,7 +189,7 @@ uint32_t drv_ds1307_enable_osci(drv_ds1307_t *ds1307)
   HAL_StatusTypeDef ret;
   uint8_t           data_osci;
 
-  ASSERT((ds1307 == NULL), DRV_DS1307_ERROR);
+  ASSERT((ds1307 != NULL), DRV_DS1307_ERROR);
 
   // Read curr format time
   ret = HAL_I2C_Mem_Read(ds1307->hi2c, DRV_DS1307_I2C_ADDRESS, DRV_DS1307_OSC_ADDRESS,
@@ -213,7 +213,7 @@ uint32_t drv_ds1307_disable_osci(drv_ds1307_t *ds1307)
   HAL_StatusTypeDef ret;
   uint8_t           data_osci;
 
-  ASSERT((ds1307 == NULL), DRV_DS1307_ERROR);
+  ASSERT((ds1307 != NULL), DRV_DS1307_ERROR);
 
   // Read curr format time
   ret = HAL_I2C_Mem_Read(ds1307->hi2c, DRV_DS1307_I2C_ADDRESS, DRV_DS1307_OSC_ADDRESS,
@@ -237,7 +237,7 @@ uint32_t drv_ds1307_set_osci_freq(drv_ds1307_t *ds1307, drv_ds1307_osci_freq_t o
   HAL_StatusTypeDef ret;
   uint8_t           data_osci;
 
-  ASSERT((ds1307 == NULL), DRV_DS1307_ERROR);
+  ASSERT((ds1307 != NULL), DRV_DS1307_ERROR);
   ASSERT((osci_freq == DRV_DS1307_OSCI_FREQ_1_HZ) ||
          (osci_freq == DRV_DS1307_OSCI_FREQ_4096_KHZ) ||
          (osci_freq == DRV_DS1307_OSCI_FREQ_8192_KHZ) ||

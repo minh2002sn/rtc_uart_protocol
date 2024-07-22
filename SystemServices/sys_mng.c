@@ -207,6 +207,8 @@ static uint32_t sys_mng_process_data()
       smng_alarm_time.sec  = smng_msg_buf[SYS_MNG_MESSAGE_SECOND_DATA_INDEX];
       ret = sys_mng_get_alarm_state(&smng_curr_time, &smng_alarm_time, &smng_state);
       ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
+      ret = bsp_rtc_get_time(&smng_curr_time);
+      ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
       smng_start_tick = HAL_GetTick();
       break;
     }
@@ -245,9 +247,11 @@ static uint32_t sys_mng_check_alarm()
       /*Get current time from DS1307 here*/
       ret = sys_mng_get_alarm_state(&smng_curr_time, &smng_alarm_time, &smng_state);
       ASSERT(ret == SYS_MNG_SUCCESS, SYS_MNG_ERROR);
-      smng_start_tick = HAL_GetTick();
+      // smng_start_tick = HAL_GetTick();
       if (smng_state == SYS_MNG_STATE_CHECK_SECOND)
       {
+        ret = bsp_rtc_get_time(&smng_curr_time);
+        ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
         smng_alarm_tick = (60 - smng_curr_time.sec + smng_alarm_time.sec) * 1000;
       }
     }
@@ -278,6 +282,7 @@ static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time,
                                         drv_ds1307_time_t *alarm_time,
                                         smng_state_t      *state)
 {
+  uint32_t ret;
   ASSERT(curr_time != NULL, SYS_MNG_ERROR);
   ASSERT(alarm_time != NULL, SYS_MNG_ERROR);
   ASSERT(state != NULL, SYS_MNG_ERROR);
@@ -304,7 +309,11 @@ static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time,
           }
           else
           {
-            *state = SYS_MNG_STATE_CHECK_SECOND;
+            *state          = SYS_MNG_STATE_CHECK_SECOND;
+            smng_start_tick = HAL_GetTick();
+            ret             = bsp_rtc_get_time(&smng_curr_time);
+            ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
+            smng_alarm_tick = (60 - smng_curr_time.sec + smng_alarm_time.sec) * 1000;
           }
         }
         else
@@ -315,7 +324,11 @@ static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time,
           }
           else
           {
-            *state = SYS_MNG_STATE_CHECK_SECOND;
+            *state          = SYS_MNG_STATE_CHECK_SECOND;
+            smng_start_tick = HAL_GetTick();
+            ret             = bsp_rtc_get_time(&smng_curr_time);
+            ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
+            smng_alarm_tick = (60 - smng_curr_time.sec + smng_alarm_time.sec) * 1000;
           }
         }
       }
@@ -334,7 +347,11 @@ static uint32_t sys_mng_get_alarm_state(drv_ds1307_time_t *curr_time,
         }
         else
         {
-          *state = SYS_MNG_STATE_CHECK_SECOND;
+          *state          = SYS_MNG_STATE_CHECK_SECOND;
+          smng_start_tick = HAL_GetTick();
+          ret             = bsp_rtc_get_time(&smng_curr_time);
+          ASSERT(ret == DRV_DS1307_SUCCESS, SYS_MNG_ERROR);
+          smng_alarm_tick = (60 - smng_curr_time.sec + smng_alarm_time.sec) * 1000;
         }
       }
     }
