@@ -1,3 +1,4 @@
 # Bỏ qua tệp cấu hình IDE
 *.vscode/
 *.settings/
+*.Debug/
