@@ -1,0 +1,18 @@
+@startuml
+hide empty description
+
+[*] --> SYS_MNG_STATE_CHECK_HOUR
+
+SYS_MNG_STATE_CHECK_HOUR -down-> SYS_MNG_STATE_CHECK_MINUTE : curr_hour == (alarm_hour - 1)
+SYS_MNG_STATE_CHECK_HOUR -down-> SYS_MNG_STATE_CHECK_MINUTE : (curr_hour == 23) && (alarm_hour == 0)
+SYS_MNG_STATE_CHECK_HOUR -down-> SYS_MNG_STATE_CHECK_MINUTE : (curr_hour == alarm_hour) && (curr_min < alarm_min)
+SYS_MNG_STATE_CHECK_HOUR -down-> SYS_MNG_STATE_CHECK_MINUTE : (curr_hour == alarm_hour) && (curr_min == alarm_min) && (curr_sec < alarm_sec)
+
+SYS_MNG_STATE_CHECK_MINUTE -down-> SYS_MNG_STATE_CHECK_SECOND : curr_min == alarm_min
+SYS_MNG_STATE_CHECK_MINUTE -down-> SYS_MNG_STATE_CHECK_SECOND : curr_min == (alarm_min - 1)
+SYS_MNG_STATE_CHECK_MINUTE -down-> SYS_MNG_STATE_CHECK_SECOND : (curr_min == 0) && (alarm_min == 59)
+
+SYS_MNG_STATE_CHECK_SECOND -> SYS_MNG_STATE_CHECK_HOUR : (curr_min == alarm_min) && (curr_sec >= alarm_sec) \n----\n Notify alarm
+
+
+@enduml
