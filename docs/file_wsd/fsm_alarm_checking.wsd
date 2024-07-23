@@ -1,0 +1,21 @@
+@startuml
+hide empty description
+
+[*] --> SYS_MNG_STATE_CHECK_HOUR
+
+SYS_MNG_STATE_CHECK_HOUR -down-> SYS_MNG_STATE_CHECK_MINUTE : curr_hour == (alarm_hour - 1)
+SYS_MNG_STATE_CHECK_HOUR -down-> SYS_MNG_STATE_CHECK_MINUTE : (curr_hour == 23)\n &&\n (alarm_hour == 0)
+SYS_MNG_STATE_CHECK_HOUR -down-> SYS_MNG_STATE_CHECK_MINUTE : (curr_hour == alarm_hour)\n &&\n (curr_min < alarm_min)
+SYS_MNG_STATE_CHECK_HOUR -down-> SYS_MNG_STATE_CHECK_MINUTE : (curr_hour == alarm_hour)\n &&\n (curr_min == alarm_min)\n &&\n (curr_sec < alarm_sec)
+SYS_MNG_STATE_CHECK_HOUR -down-> SYS_MNG_STATE_CHECK_HOUR : duration_tick >= tick_per_hour\n----\n Get time\n start_tick = 0
+
+SYS_MNG_STATE_CHECK_MINUTE -down-> SYS_MNG_STATE_CHECK_SECOND : curr_min == alarm_min
+SYS_MNG_STATE_CHECK_MINUTE -down-> SYS_MNG_STATE_CHECK_SECOND : curr_min == (alarm_min - 1)
+SYS_MNG_STATE_CHECK_MINUTE -down-> SYS_MNG_STATE_CHECK_SECOND : (curr_min == 59)\n &&\n (alarm_min == 0)
+SYS_MNG_STATE_CHECK_MINUTE -down-> SYS_MNG_STATE_CHECK_MINUTE : duration_tick >= tick_per_minute\n----\n Get time\n start_tick = 0
+
+SYS_MNG_STATE_CHECK_SECOND -up-> SYS_MNG_STATE_CHECK_HOUR : (curr_min == alarm_min) && (curr_sec >= alarm_sec) \n----\n Notify alarm\n start_tick = 0
+SYS_MNG_STATE_CHECK_SECOND -> SYS_MNG_STATE_CHECK_SECOND : duration_tick >= tick_per_minute\n----\n Get time\n start_tick = 0
+
+
+@enduml

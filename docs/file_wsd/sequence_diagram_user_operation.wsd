@@ -1,0 +1,83 @@
+@startuml
+
+participant USER as "User"
+participant SYS_UART as "System UART\n(sys_uart)"
+participant SYS_MNG as "System manager\n(sys_mng)"
+participant BSP_RTC as "BSP RTC\n(bsp_rtc)"
+participant DRV_DS1307 as "Driver DS1307\n(drv_ds1307)"
+
+skinparam dpi 300
+
+group Set time
+  USER --> SYS_UART: Send setting time command and time data
+  group sys_data_mng
+    SYS_UART --> SYS_MNG: Send message
+    note left of SYS_MNG
+      Message frames is defined in
+      sys_data_mng_msg_define.h
+    end note
+  end
+  SYS_MNG --> BSP_RTC: Call set time function
+  BSP_RTC --> DRV_DS1307: Call set time function
+
+  group if error
+    group
+      SYS_MNG --> SYS_UART: Send error message
+      note left of SYS_MNG
+        Message frames is defined in
+        sys_data_mng_msg_define.h
+      end note
+    end
+    SYS_UART --> USER: Send error message in string
+  end
+end
+
+group Get time
+  USER --> SYS_UART: Send getting time command and time data
+  group sys_data_mng
+    SYS_UART --> SYS_MNG: Send message
+    note left of SYS_MNG
+      Message frames is defined in
+      sys_data_mng_msg_define.h
+    end note
+  end
+  SYS_MNG --> BSP_RTC: Call get time function
+  BSP_RTC --> DRV_DS1307: Call get time function
+  DRV_DS1307 --> DRV_DS1307: Get time
+  DRV_DS1307 --> BSP_RTC: Return time data
+  BSP_RTC --> SYS_MNG: Return time data
+  group sys_data_mng
+    SYS_MNG --> SYS_UART: Send message
+    note left of SYS_MNG
+      Message frames is defined in
+      sys_data_mng_msg_define.h
+    end note
+  end
+  SYS_UART --> USER: Send current time data in string
+end
+
+group Set alarm
+  USER --> SYS_UART: Send setting alarm command and alarm time data
+  group sys_data_mng
+    SYS_UART --> SYS_MNG: Send message
+    note left of SYS_MNG
+      Message frames is defined in
+      sys_data_mng_msg_define.h
+    end note
+  end
+  SYS_MNG --> SYS_MNG: Store alarm data
+end
+
+group Check alarm
+  SYS_MNG --> SYS_MNG: Checking alarm
+  group sys_data_mng
+    SYS_MNG --> SYS_UART: Send alarm notification message
+    note left of SYS_MNG
+      Message frames is defined in
+      sys_data_mng_msg_define.h
+    end note
+  end
+  SYS_UART --> USER: Send alarm notification message in string
+end
+
+@enduml

@@ -1,0 +1,52 @@
+@startuml
+
+participant USER as "User"
+participant USB_UART as "USB UART"
+participant BSP_UART as "BSP uart\n(bsp_uart)"
+participant SYS_UART as "System uart\n(sys_uart)"
+participant SYS_MNG as "System manager\n(sys_mng)"
+participant BSP_RTC as "BSP rtc\n(bsp_rtc)"
+participant DRV_DS307 as "Driver ds1307\n(drv_ds1307)"
+
+skinparam dpi 300
+
+USER    --> USB_UART: User send\nmessage
+
+USB_UART <--> BSP_UART: Init\nReceive data
+
+BSP_UART <--> SYS_UART: 
+
+SYS_UART --> SYS_UART: Check rx\ncbuffer
+
+SYS_UART --> SYS_UART: Data process\nFSM
+
+SYS_UART --> SYS_MNG: 
+
+SYS_MNG --> SYS_UART:
+
+SYS_MNG --> SYS_MNG: Check cbuffer\nProcess data
+
+SYS_MNG --> SYS_MNG: Alarm FSM
+
+SYS_MNG <--> BSP_RTC: 
+
+BSP_RTC --> DRV_DS307: 
+
+
+' group sys_data_mng [Topic button]
+'   DRV_BTN --> SYS_MNG: Send message
+'   note right of DRV_BTN
+'     Message frames is defined in
+'     sys_data_mng_msg_frame.h
+'   end note
+' end
+
+' group sys_data_mng [Topic LED]
+'   SYS_MNG --> SYS_LED: Send message
+'   note right of SYS_MNG
+'     Message frames is defined in
+'     sys_data_mng_msg_frame.h
+'   end note
+' end
+
+@enduml
