@@ -20,6 +20,8 @@
 #include "sys_uart.h"
 #include "bsp_uart.h"
 #include "common.h"
+#include <stdlib.h>
+#include <string.h>
 
 /* Private defines ---------------------------------------------------- */
 #define SYS_UART_CBUFFER_SIZE (20) /*Size of circular buffer*/
@@ -80,6 +82,9 @@ static uint8_t          suart_msg_buf[SYS_UART_MESSAGE_SIZE];
 static sys_data_mng_conn_uart_to_mng_msg_t suart_msg_to_mng;
 static uint32_t                            suart_start_tick = 0;
 static uint8_t                             suart_data_count = 0;
+
+static const char suart_alarm_notify_str[]  = "ALARM ALARM ALARM!!!!!!\n";
+static const char suart_set_time_fail_str[] = "SET TIME FAILED!!!\n";
 
 /* Private function prototypes ---------------------------------------- */
 /**
@@ -300,28 +305,29 @@ static uint32_t sys_uart_process_data_from_sys_mng()
     {
     case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_NOTIFY_ALARM:
     {
-      char str[] = "ALARM ALARM ALARM!!!!!!";
-      ret        = bsp_uart_transmit(&suart, (uint8_t *)&str, sizeof(str) - 1);
+      ret = bsp_uart_transmit(&suart, (uint8_t *)&suart_alarm_notify_str,
+                              strlen(suart_alarm_notify_str));
       ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
       break;
     }
     case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_GET_TIME:
     {
-      char str[20];
-      sprintf(str, "%d-%d-%d | %d:%d:%d", suart_msg_buf[SYS_UART_MESSAGE_DATE_INDEX],
+      char str[30];
+      sprintf(str, "%02d-%02d-%02d | %02d:%02d:%02d\n",
+              suart_msg_buf[SYS_UART_MESSAGE_DATE_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_MONTH_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_YEAR_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_HOUR_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_MIN_INDEX],
               suart_msg_buf[SYS_UART_MESSAGE_SEC_INDEX]);
-      ret = bsp_uart_transmit(&suart, (uint8_t *)&str, sizeof(str) - 1);
+      ret = bsp_uart_transmit(&suart, (uint8_t *)&str, strlen(str));
       ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
       break;
     }
     case SYS_DATA_MNG_CONN_MNG_TO_UART_EVENT_RES_SET_TIME_ERROR:
     {
-      char str[] = "SET TIME FAILED!!!";
-      ret        = bsp_uart_transmit(&suart, (uint8_t *)&str, sizeof(str) - 1);
+      ret = bsp_uart_transmit(&suart, (uint8_t *)&suart_set_time_fail_str,
+                              strlen(suart_set_time_fail_str));
       ASSERT(ret == BSP_UART_SUCCESS, SYS_UART_ERROR);
       break;
       break;
