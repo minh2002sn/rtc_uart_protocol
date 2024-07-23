@@ -90,35 +90,6 @@ uint32_t bsp_rtc_set_date(drv_ds1307_date_t *date);
  */
 uint32_t bsp_rtc_get_date(drv_ds1307_date_t *date);
 
-/**
- * @brief         Enable RTC oscillator frequency through BSP layer
- *
- * @return
- *  - 0: Success
- *  - 1: Error
- */
-uint32_t bsp_rtc_enable_osci(void);
-
-/**
- * @brief         Disable RTC oscillator frequency through BSP layer
- *
- * @return
- *  - 0: Success
- *  - 1: Error
- */
-uint32_t bsp_rtc_disable_osci(void);
-
-/**
- * @brief         Set RTC oscillator frequency through BSP layer
- *
- * @param[in]     osci_freq   Oscillator frequency
- *
- * @return
- *  - 0: Success
- *  - 1: Error
- */
-uint32_t bsp_rtc_set_osci_freg(drv_ds1307_osci_freq_t osci_freq);
-
 #endif // __BSP_RTC_H
 
 /* End of file -------------------------------------------------------- */
