@@ -71,24 +71,24 @@ uint32_t drv_ds1307_init(drv_ds1307_t *ds1307, I2C_HandleTypeDef *hi2c)
 uint32_t drv_ds1307_set_time(drv_ds1307_t *ds1307, drv_ds1307_time_t *time, drv_ds1307_time_format_t time_format)
 {
   HAL_StatusTypeDef ret;
-  uint8_t           data[3];
+  drv_ds1307_time_t data;
 
   ASSERT(ds1307 != NULL, DRV_DS1307_ERROR);
   ASSERT(time != NULL, DRV_DS1307_ERROR);
   ASSERT((time_format == DRV_DS1307_TIME_FORMAT_12) || (time_format == DRV_DS1307_TIME_FORMAT_24),
          DRV_DS1307_ERROR);
 
-  data[0] = drv_dec2bcd(time->sec);
-  data[1] = drv_dec2bcd(time->min);
-  data[2] = drv_dec2bcd(time->hour);
+  data.sec  = drv_dec2bcd(time->sec);
+  data.min  = drv_dec2bcd(time->min);
+  data.hour = drv_dec2bcd(time->hour);
 
   if (time_format == DRV_DS1307_TIME_FORMAT_12)
   {
-    data[2] |= DRV_DS1307_ENA_12H_FORMAT_BIT; // 12-hour format
+    data.sec |= DRV_DS1307_ENA_12H_FORMAT_BIT; // 12-hour format
   }
 
   ret = HAL_I2C_Mem_Write(ds1307->hi2c, DRV_DS1307_I2C_ADDRESS, DRV_DS1307_TIME_ADDRESS,
-                          DRV_DS1307_MEM_SIZE, data, sizeof(data), HAL_MAX_DELAY);
+                          DRV_DS1307_MEM_SIZE, &data, sizeof(data), HAL_MAX_DELAY);
   ASSERT(ret == HAL_OK, DRV_DS1307_ERROR);
 
   return DRV_DS1307_SUCCESS;

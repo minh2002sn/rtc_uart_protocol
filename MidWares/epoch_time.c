@@ -94,27 +94,20 @@ uint32_t epoch_time_decode(uint32_t epoch, epoch_data_t *epoch_data)
     curr_year++;
     ret = check_year(curr_year, &curr_year_days);
     ASSERT(ret == EPOCH_TIME_SUCCESS, EPOCH_TIME_ERROR);
+    if (curr_year_days == 366)
+    {
+      days_in_month[1] = 29;
+    }
+    else
+    {
+      days_in_month[1] = 28;
+    }
   }
 
   // Caculate month
   while (days_passed > days_in_month[curr_month - 1])
   {
-    if (curr_month == 2)
-    {
-      if (curr_year % 4)
-      {
-        days_passed -= 29;
-      }
-      else
-      {
-        days_passed -= 28;
-      }
-    }
-    else
-    {
-      days_passed -= days_in_month[curr_month - 1];
-    }
-
+    days_passed -= days_in_month[curr_month - 1];
     curr_month++;
   }
 
@@ -125,7 +118,7 @@ uint32_t epoch_time_decode(uint32_t epoch, epoch_data_t *epoch_data)
     if (curr_month > MONTH_PER_YEAR)
     {
       curr_month = 1;
-      curr_year  = 1;
+      curr_year += 1;
     }
     curr_date = 1;
   }

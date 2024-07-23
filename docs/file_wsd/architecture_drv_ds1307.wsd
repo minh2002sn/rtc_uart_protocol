@@ -1,0 +1,18 @@
+@startuml
+
+package DeviceDrivers <<Frame>> {
+  class drv_ds1307 {
+    -hi2c: I2C_HandleTypeDef *
+    +drv_ds1307_init(ds1307: drv_ds1307_t *, hi2c: I2C_HandleTypeDef *): uint32_t
+    +drv_ds1307_set_time(ds1307: drv_ds1307_t *, time: drv_ds1307_time_t *, time_format: drv_ds1307_time_format_t): uint32_t
+    +drv_ds1307_get_time(ds1307: drv_ds1307_t *, time: drv_ds1307_time_t *): uint32_t
+    +drv_ds1307_set_date(ds1307: drv_ds1307_t *, date: drv_ds1307_date_t *): uint32_t
+    +drv_ds1307_get_date(ds1307: drv_ds1307_t *, date: drv_ds1307_date_t *): uint32_t
+    +drv_ds1307_set_time_format(ds1307: drv_ds1307_t *, time_format: drv_ds1307_time_format_t): uint32_t
+    +drv_ds1307_enable_osci(ds1307: drv_ds1307_t *): uint32_t
+    +drv_ds1307_disable_osci(ds1307: drv_ds1307_t *): uint32_t
+    +drv_ds1307_set_osci_freq(ds1307: drv_ds1307_t *, osci_freq: drv_ds1307_osci_freq_t): uint32_t
+  }
+}
+
+@enduml

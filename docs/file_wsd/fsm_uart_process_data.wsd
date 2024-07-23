@@ -1,0 +1,14 @@
+@startuml
+hide empty description
+
+[*] --> WAIT_TYPE
+WAIT_TYPE --> WAIT_LEN: rxdata\n----\nstore type
+WAIT_TYPE --> WAIT_TYPE: no data 
+WAIT_LEN --> WAIT_TYPE: time out
+WAIT_LEN --> WAIT_LEN: no data 
+WAIT_LEN --> WAIT_DATA: rxdata\n----\nstore len
+WAIT_DATA --> WAIT_DATA: no data 
+WAIT_DATA --> WAIT_DATA: rxdata\n----\ncnt++
+WAIT_DATA --> WAIT_TYPE: cnt==len\n----\nsend event
+
+@enduml

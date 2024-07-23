@@ -36,14 +36,14 @@ typedef enum
   DRV_DS1307_TIME_FORMAT_24,
 } drv_ds1307_time_format_t;
 
-typedef struct
+typedef struct __attribute__((packed))
 {
-  uint8_t hour;
-  uint8_t min;
   uint8_t sec;
+  uint8_t min;
+  uint8_t hour;
 } drv_ds1307_time_t;
 
-typedef struct
+typedef struct __attribute__((packed))
 {
   uint8_t day;
   uint8_t date;

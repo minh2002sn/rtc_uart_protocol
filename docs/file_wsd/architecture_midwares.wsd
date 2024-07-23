@@ -1,0 +1,23 @@
+@startuml
+
+package Middlewares <<Frame>> {
+  class cbuffer
+  {
+    -data: uint8_t
+    -size: uint32_t
+    -writer: volatile uint32_t
+    -reader: volatile uint32_t
+    -overflow: volatile uint32_t
+    -active: volatile bool
+    +cb_init(): uint32_t
+    +cb_clear(): uint32_t
+    +cb_read(): uint32_t
+    +cb_write(): uint32_t
+    +cb_data_count(): uint32_t
+    +cb_space_count(): uint32_t
+    -cb_write_byte(): uint32_t
+    -cb_read_byte(): uint32_t
+  }
+}
+
+@enduml
