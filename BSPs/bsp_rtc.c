@@ -91,34 +91,4 @@ uint32_t bsp_rtc_get_date(drv_ds1307_date_t *date)
   return BSP_RTC_SUCCESS;
 }
 
-uint32_t bsp_rtc_enable_osci(void)
-{
-  uint32_t ret;
-
-  ret = drv_ds1307_enable_osci(&ds1307_device);
-  ASSERT(ret == DRV_DS1307_SUCCESS, BSP_RTC_ERROR);
-
-  return BSP_RTC_SUCCESS;
-}
-
-uint32_t bsp_rtc_disable_osci(void)
-{
-  uint32_t ret;
-
-  ret = drv_ds1307_disable_osci(&ds1307_device);
-  ASSERT(ret == DRV_DS1307_SUCCESS, BSP_RTC_ERROR);
-
-  return BSP_RTC_SUCCESS;
-}
-
-uint32_t bsp_rtc_set_osci_freg(drv_ds1307_osci_freq_t osci_freq)
-{
-  uint32_t ret;
-
-  ret = drv_ds1307_set_osci_freq(&ds1307_device, osci_freq);
-  ASSERT(ret == DRV_DS1307_SUCCESS, BSP_RTC_ERROR);
-
-  return BSP_RTC_SUCCESS;
-}
-
 /* End of file -------------------------------------------------------- */

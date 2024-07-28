@@ -53,19 +53,31 @@ typedef struct __attribute__((packed))
 
 typedef enum
 {
+  DRV_DS1307_OSCI_EN,
+  DRV_DS1307_OSCI_DIS
+} drv_ds1307_osci_en_t;
+
+typedef enum
+{
   DRV_DS1307_OSCI_FREQ_1_HZ,
   DRV_DS1307_OSCI_FREQ_4096_KHZ,
   DRV_DS1307_OSCI_FREQ_8192_KHZ,
   DRV_DS1307_OSCI_FREQ_32768_KHZ
 } drv_ds1307_osci_freq_t;
 
+typedef enum
+{
+  DRV_DS1307_OSCI_OFF_OUT_STATE_LOW,
+  DRV_DS1307_OSCI_OFF_OUT_STATE_HIGH,
+} drv_ds1307_osci_off_out_state_t;
+
 typedef struct
 {
-  drv_ds1307_time_format_t time_format;
-  drv_ds1307_time_t        time;
-  drv_ds1307_date_t        data;
-  drv_ds1307_osci_freq_t   osci_freq;
-  I2C_HandleTypeDef       *hi2c;
+  drv_ds1307_time_format_t        time_format;
+  drv_ds1307_osci_en_t            osci_en;
+  drv_ds1307_osci_freq_t          osci_freq;
+  drv_ds1307_osci_off_out_state_t osci_out_state;
+  I2C_HandleTypeDef              *hi2c;
 } drv_ds1307_t;
 
 /* Public macros ------------------------------------------------------ */
@@ -133,7 +145,7 @@ uint32_t drv_ds1307_set_date(drv_ds1307_t *ds1307, drv_ds1307_date_t *date);
  *  - 0: Success
  *  - 1: Error
  */
-uint32_t drv_ds1307_det_date(drv_ds1307_t *ds1307, drv_ds1307_date_t *date);
+uint32_t drv_ds1307_get_date(drv_ds1307_t *ds1307, drv_ds1307_date_t *date);
 
 /**
  * @brief         Set time format
@@ -182,5 +194,18 @@ uint32_t drv_ds1307_disable_osci(drv_ds1307_t *ds1307);
 uint32_t drv_ds1307_set_osci_freq(drv_ds1307_t *ds1307, drv_ds1307_osci_freq_t osci_freq);
 
 #endif // __DRV_DS1307_H
+
+/**
+ * @brief         Set output state when oscillator off
+ *
+ * @param[in]     ds1307          Pointer to drv_ds1307_t structure
+ * @param[in]     osci_out_state  Output state of SWQ/OUT pin when oscillator off
+ *
+ * @return
+ *  - 0: Success
+ *  - 1: Error
+ */
+uint32_t drv_ds1307_set_osci_off_out_state(drv_ds1307_t *ds1307,
+                                           drv_ds1307_osci_off_out_state_t osci_out_state);
 
 /* End of file -------------------------------------------------------- */
