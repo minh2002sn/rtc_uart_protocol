@@ -58,7 +58,6 @@ uint32_t sys_adc_uart_loop();
  * @param[in]     hadc         Pointer to ADC_HandleTypeDef structure
  *
  * @return        none
- *
  */
 void sys_adc_conversion_complete_handle(ADC_HandleTypeDef *hadc);
 

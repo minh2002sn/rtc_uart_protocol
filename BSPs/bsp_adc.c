@@ -116,8 +116,8 @@ void bsp_adc_exti_handle(bsp_adc_t *badc, ADC_HandleTypeDef *hadc)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-  // Gọi hàm xử lý ngắt cho ADC
-    bsp_adc_exti_handle(g_badc, hadc);
+	  bsp_adc_exti_handle(g_badc, hadc);
+	  sys_adc_conversion_complete_handle(hadc);
 }
 
 /* Private definitions ----------------------------------------------- */

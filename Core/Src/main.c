@@ -118,7 +118,7 @@ int main(void)
     // sys_uart_loop();
     // sys_mng_loop();
     sys_adc_uart_loop();
-    HAL_Delay(300);
+
   }
   /* USER CODE END 3 */
 }

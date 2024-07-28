@@ -24,6 +24,7 @@
 /* Private variables ------------------------------------------------- */
 static bsp_uart_t uart;
 static bsp_adc_t  adc;
+static uint8_t    adc_conversion_done_flag = 0;
 
 /* Function definitions ----------------------------------------------- */
 uint32_t sys_adc_uart_init(UART_HandleTypeDef *huart, ADC_HandleTypeDef *hadc)
@@ -42,6 +43,10 @@ uint32_t sys_adc_uart_init(UART_HandleTypeDef *huart, ADC_HandleTypeDef *hadc)
   ret = bsp_adc_init(&adc, hadc);
   ASSERT(ret == BSP_ADC_SUCCESS, SYS_ADC_UART_ERROR);
 
+  // Start the first ADC conversion
+  ret = bsp_adc_start_conversion(&adc);
+  ASSERT(ret == BSP_ADC_SUCCESS, SYS_ADC_UART_ERROR);
+
   return SYS_ADC_UART_SUCCESS;
 }
 
@@ -51,47 +56,46 @@ uint32_t sys_adc_uart_loop()
   uint32_t ret;
   uint32_t adc_value;
 
-  // Start ADC conversion
-  ret = bsp_adc_start_conversion(&adc);
-  if (ret != BSP_ADC_SUCCESS)
-  {
-    return SYS_ADC_UART_ERROR;
-  }
+  if (adc_conversion_done_flag)
+   {
+     adc_conversion_done_flag = 0;
 
-  // Wait for ADC conversion to complete
-  while (!bsp_adc_conversion_done(&adc))
-  {
-    // Do nothing, just wait
-  }
+     // Read ADC value
+     ret = bsp_adc_read(&adc, &adc_value);
+     if (ret != BSP_ADC_SUCCESS)
+     {
+       // Format ADC value as string
+       snprintf((char *)buff, sizeof(buff), "%lu\r\n", adc_value);
 
-  // Read ADC value
-  ret = bsp_adc_read(&adc, &adc_value);
-  if (ret == BSP_ADC_SUCCESS)
-  {
-    // Format ADC value as string
-    snprintf((char *)buff, sizeof(buff), "%lu\r\n", adc_value);
+       // Transmit ADC value via UART
+       ret = bsp_uart_transmit(&uart, buff, strlen((char *)buff));
+       if (ret != BSP_UART_SUCCESS)
+       {
+         return SYS_ADC_UART_ERROR;
+       }
+     }
+     else
+     {
+       return SYS_ADC_UART_ERROR;
+     }
 
-    // Transmit ADC value via UART
-    ret = bsp_uart_transmit(&uart, buff, strlen((char *)buff));
-    if (ret != BSP_UART_SUCCESS)
-    {
-      return SYS_ADC_UART_ERROR;
-    }
-  }
-  else
-  {
-    return SYS_ADC_UART_ERROR;
-  }
+     // Start the next ADC conversion
+     ret = bsp_adc_start_conversion(&adc);
+     if (ret != BSP_ADC_SUCCESS)
+     {
+       return SYS_ADC_UART_ERROR;
+     }
+   }
 
-  return SYS_ADC_UART_SUCCESS;
+   return SYS_ADC_UART_SUCCESS;
 }
 
 void sys_adc_conversion_complete_handle(ADC_HandleTypeDef *hadc)
 {
   if (adc.hadc == hadc)
   {
-    // Handle ADC conversion complete
-    sys_adc_uart_loop();
+    // Set flag to indicate ADC conversion complete
+    adc_conversion_done_flag = 1;
   }
 }
 

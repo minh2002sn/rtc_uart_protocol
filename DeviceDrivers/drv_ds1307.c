@@ -98,9 +98,9 @@ uint32_t drv_ds1307_set_time(drv_ds1307_t *ds1307, drv_ds1307_time_t *time, drv_
   data.min  = drv_dec2bcd(time->min);
   data.hour = drv_dec2bcd(time->hour);
   // Convert data to BCD format
-  data[0] = drv_dec2bcd(time->sec);
-  data[1] = drv_dec2bcd(time->min);
-  data[2] = drv_dec2bcd(time->hour);
+//  data[0] = drv_dec2bcd(time->sec);
+//  data[1] = drv_dec2bcd(time->min);
+//  data[2] = drv_dec2bcd(time->hour);
 
   // Set time format bit
   if (time_format == DRV_DS1307_TIME_FORMAT_12)
