@@ -61,19 +61,23 @@ static void play_melody(TIM_HandleTypeDef *htim)
 
   for (int i = 0; i < MELODY_LENGTH; i++)
   {
-    __HAL_TIM_SET_COMPARE(htim, TIM_CHANNEL_1, melody_notes[i]);
-
-    current_time = HAL_GetTick();
-    while ((HAL_GetTick() - current_time) < ((1000 / melody_durations[i]) * 2))
+    if (melody_notes[i] > 0)
     {
-      // Delay time
+      __HAL_TIM_SET_COMPARE(htim, TIM_CHANNEL_1, melody_notes[i]);
+      current_time = HAL_GetTick();
+      while ((HAL_GetTick() - current_time) < ((1000 / melody_durations[i]) * 2))
+      {
+        // Delay time
+      }
     }
-
-    __HAL_TIM_SET_COMPARE(htim, TIM_CHANNEL_1, 5000); // Turn off the buzzer
-    current_time = HAL_GetTick();
-    while ((HAL_GetTick() - current_time) < 10)
+    else
     {
-      // Delay time
+      __HAL_TIM_SET_COMPARE(htim, TIM_CHANNEL_1, 5000);
+      current_time = HAL_GetTick();
+      while ((HAL_GetTick() - current_time) < ((1000 / melody_durations[i]) * 2))
+      {
+        // Delay time
+      }
     }
   }
 

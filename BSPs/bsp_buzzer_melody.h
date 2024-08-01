@@ -21,7 +21,7 @@
 #include "bsp_buzzer_tone.h"
 
 /* Public defines ----------------------------------------------------- */
-#define MELODY_LENGTH 21 // Cập nhật độ dài đoạn nhạc
+#define MELODY_LENGTH 7 // Cập nhật độ dài đoạn nhạc
 
 /* Public enumerate/structure ----------------------------------------- */
 
@@ -32,16 +32,10 @@
 /* Public function prototypes ----------------------------------------- */
 
 /* Melody data -------------------------------------------------------- */
-static const uint16_t melody_notes[MELODY_LENGTH] = {
-  NOTE_A4,  NOTE_G4, NOTE_AS4, NOTE_A4, NOTE_F4,  NOTE_G4, 0,
-  NOTE_E5,  NOTE_D5, NOTE_C5,  NOTE_A4, NOTE_AS4, NOTE_A4, NOTE_G4,
-  NOTE_AS4, NOTE_A4, NOTE_F4,  NOTE_G4, 0,        NOTE_D4, NOTE_G4
-};
+static const uint16_t melody_notes[MELODY_LENGTH] = { NOTE_A5, 0, NOTE_E5, 0,
+                                                      NOTE_A4, 0, NOTE_A3 };
 
-static const uint16_t melody_durations[MELODY_LENGTH] = {
-  12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-  12, 12, 12, 12, 12, 12, 12, 12, 12, 12
-};
+static const uint16_t melody_durations[MELODY_LENGTH] = { 8, 7, 7, 8, 6, 9, 2 };
 
 #endif // __BSP_BUZZER_MELODY_H
 
